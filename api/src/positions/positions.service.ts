@@ -1,15 +1,15 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { PG_CONNECTION } from 'src/constants';
-import { OrganizationDto } from './dto/organization.dto';
+import { PositionDto } from './dto/position.dto';
 
 @Injectable()
-export class OrganizationsService {
+export class PositionsService {
     constructor(@Inject(PG_CONNECTION) private conn: any) { }
 
     async findAll() {
         const res = await this.conn.query(`
             SELECT *
-            FROM organizations
+            FROM positions
             WHERE deleted_at IS NULL`
         );
 
@@ -19,13 +19,13 @@ export class OrganizationsService {
     async findOne(id: number) {
         const res = await this.conn.query(`
             SELECT *
-            FROM organizations
+            FROM positions
             WHERE id = $1 AND deleted_at IS NULL`,
             [id]
         );
 
         if (res.rows.length === 0) {
-            throw new NotFoundException('Организация не найдена');
+            throw new NotFoundException('Должность не найдена');
         }
 
         return res.rows[0];
@@ -33,41 +33,41 @@ export class OrganizationsService {
 
     async delete(id: number) {
         const res = await this.conn.query(`
-            UPDATE organizations
+            UPDATE positions
             SET deleted_at = NOW()
             WHERE id = $1 AND deleted_at IS NULL`,
             [id]
         );
 
         if (res.rowCount === 0) {
-            throw new NotFoundException('Организация не найдена');
+            throw new NotFoundException('Должность не найдена');
         }
 
         return;
     }
 
-    async create(organizationDto: OrganizationDto) {
+    async create(positionDto: PositionDto) {
         const res = await this.conn.query(`
-            INSERT INTO organizations (name, comment)
-            VALUES ($1, $2)
+            INSERT INTO positions (name)
+            VALUES ($1)
             RETURNING *`,
-            [organizationDto.name, organizationDto.comment]
+            [positionDto.name]
         );
 
         return res.rows[0];
     }
 
-    async update(id: number, organizationDto: OrganizationDto) {
+    async update(id: number, positionDto: PositionDto) {
         const res = await this.conn.query(`
-            UPDATE organizations
-            SET name = $1, comment = $2, updated_at = NOW()
-            WHERE id = $3 AND deleted_at IS NULL
+            UPDATE positions
+            SET name = $1, updated_at = NOW()
+            WHERE id = $2 AND deleted_at IS NULL
             RETURNING *`,
-            [organizationDto.name, organizationDto.comment, id]
+            [positionDto.name, id]
         );
 
         if (res.rowCount === 0) {
-            throw new NotFoundException('Организация не найдена');
+            throw new NotFoundException('Должность не найдена');
         }
 
         return res.rows[0];
