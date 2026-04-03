@@ -6,11 +6,14 @@ import { OrganizationsModule } from './organizations/organizations.module';
 import { ConfigModule } from '@nestjs/config';
 import { PositionsModule } from './positions/positions.module';
 import { DepartmentsModule } from './departments/departments.module';
+import { EmployeesModule } from './employees/employees.module';
+import { PassportsModule } from './passports/passports.module';
+import { AddressesModule } from './addresses/addresses.module';
 
 @Module({
   imports: [DbModule, ConfigModule.forRoot({
     envFilePath: '../.env'
-  }), OrganizationsModule, PositionsModule, DepartmentsModule],
+  }), OrganizationsModule, PositionsModule, DepartmentsModule, EmployeesModule, PassportsModule, AddressesModule],
   controllers: [AppController],
   providers: [AppService],
 })

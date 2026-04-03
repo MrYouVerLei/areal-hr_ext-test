@@ -9,11 +9,28 @@ export const shorthands = undefined;
  * @returns {Promise<void> | void}
  */
 export const up = (pgm) => {
-    pgm.createTable('positions', {
+    pgm.createTable('addresses', {
         id: 'id',
-        name: {
+        region: {
             type: 'varchar(255)',
             notNull: true
+        },
+        locality: {
+            type: 'varchar(255)',
+            notNull: true
+        },
+        street: {
+            type: 'varchar(255)'
+        },
+        house: {
+            type: 'varchar(10)',
+            notNull: true
+        },
+        corps: {
+            type: 'varchar(10)'
+        },
+        apartment: {
+            type: 'varchar(10)'
         },
         created_at: {
             type: 'timestamp',
@@ -37,4 +54,4 @@ export const up = (pgm) => {
  * @param run {() => void | undefined}
  * @returns {Promise<void> | void}
  */
-export const down = (pgm) => {};
+export const down = (pgm) => { };

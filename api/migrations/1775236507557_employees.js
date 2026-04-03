@@ -9,11 +9,32 @@ export const shorthands = undefined;
  * @returns {Promise<void> | void}
  */
 export const up = (pgm) => {
-    pgm.createTable('positions', {
+    pgm.createTable('employees', {
         id: 'id',
-        name: {
-            type: 'varchar(255)',
+        last_name: {
+            type: 'varchar(50)',
             notNull: true
+        },
+        first_name: {
+            type: 'varchar(50)',
+            notNull: true
+        },
+        patronymic: {
+            type: 'varchar(50)'
+        },
+        birth_date: {
+            type: 'date',
+            notNull: true
+        },
+        address_id: {
+            type: 'integer',
+            notNull: true,
+            references: '"addresses"'
+        },
+        passport_id: {
+            type: 'integer',
+            notNull: true,
+            references: '"passports"'
         },
         created_at: {
             type: 'timestamp',

@@ -11,8 +11,13 @@ export const shorthands = undefined;
 export const up = (pgm) => {
     pgm.createTable('departments', {
         id: 'id',
-        name: { type: 'varchar(255)', notNull: true },
-        comment: { type: 'text' },
+        name: {
+            type: 'varchar(255)',
+            notNull: true
+        },
+        comment: {
+            type: 'text'
+        },
         organization_id: {
             type: 'integer',
             notNull: true,

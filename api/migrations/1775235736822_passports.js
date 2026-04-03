@@ -9,9 +9,25 @@ export const shorthands = undefined;
  * @returns {Promise<void> | void}
  */
 export const up = (pgm) => {
-    pgm.createTable('positions', {
+    pgm.createTable('passports', {
         id: 'id',
-        name: {
+        series: {
+            type: 'varchar(4)',
+            notNull: true
+        },
+        number: {
+            type: 'varchar(6)',
+            notNull: true
+        },
+        issue_date: {
+            type: 'date',
+            notNull: true
+        },
+        subdivision_code: {
+            type: 'varchar(7)',
+            notNull: true
+        },
+        issuing_authority: {
             type: 'varchar(255)',
             notNull: true
         },
