@@ -11,11 +11,13 @@ import { PassportsModule } from './passports/passports.module';
 import { AddressesModule } from './addresses/addresses.module';
 import { HrOperationsModule } from './hr-operations/hr-operations.module';
 import { UsersModule } from './users/users.module';
+import { ChangelogsModule } from './changelogs/changelogs.module';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [DbModule, ConfigModule.forRoot({
     envFilePath: '../.env'
-  }), OrganizationsModule, PositionsModule, DepartmentsModule, EmployeesModule, PassportsModule, AddressesModule, HrOperationsModule, UsersModule],
+  }), OrganizationsModule, PositionsModule, DepartmentsModule, EmployeesModule, PassportsModule, AddressesModule, HrOperationsModule, UsersModule, ChangelogsModule, FilesModule],
   controllers: [AppController],
   providers: [AppService],
 })
