@@ -9,11 +9,12 @@ import { DepartmentsModule } from './departments/departments.module';
 import { EmployeesModule } from './employees/employees.module';
 import { PassportsModule } from './passports/passports.module';
 import { AddressesModule } from './addresses/addresses.module';
+import { HrOperationsModule } from './hr-operations/hr-operations.module';
 
 @Module({
   imports: [DbModule, ConfigModule.forRoot({
     envFilePath: '../.env'
-  }), OrganizationsModule, PositionsModule, DepartmentsModule, EmployeesModule, PassportsModule, AddressesModule],
+  }), OrganizationsModule, PositionsModule, DepartmentsModule, EmployeesModule, PassportsModule, AddressesModule, HrOperationsModule],
   controllers: [AppController],
   providers: [AppService],
 })

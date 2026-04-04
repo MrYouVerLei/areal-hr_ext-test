@@ -30,7 +30,7 @@ export class EmployeesService {
     );
 
     if (res.rows.length === 0) {
-      throw new NotFoundException('Сотруник не найден');
+      throw new NotFoundException('Сотрудник не найден');
     }
 
     return res.rows[0];
@@ -45,7 +45,7 @@ export class EmployeesService {
     );
 
     if (res.rowCount === 0) {
-      throw new NotFoundException('Сотруник не найден');
+      throw new NotFoundException('Сотрудник не найден');
     }
 
     return;
