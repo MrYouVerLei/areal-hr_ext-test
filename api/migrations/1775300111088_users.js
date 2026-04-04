@@ -9,34 +9,32 @@ export const shorthands = undefined;
  * @returns {Promise<void> | void}
  */
 export const up = (pgm) => {
-    pgm.createTable('hr_operations', {
+    pgm.createTable('users', {
         id: 'id',
-        salary: {
-            type: 'numeric',
-            notNull: true
+        login: {
+            type: 'varchar(50)',
+            notNull: true,
+            unique: true
         },
-        operation_type: {
+        password: {
             type: 'varchar(255)',
             notNull: true
         },
-        operation_date: {
-            type: 'date',
+        last_name: {
+            type: 'varchar(50)',
             notNull: true
         },
-        employee_id: {
-            type: 'integer',
-            notNull: true,
-            references: '"employees"'
+        first_name: {
+            type: 'varchar(50)',
+            notNull: true
         },
-        position_id: {
-            type: 'integer',
-            notNull: true,
-            references: '"positions"'
+        patronymic: {
+            type: 'varchar(50)'
         },
-        department_id: {
+        role_id: {
             type: 'integer',
             notNull: true,
-            references: '"departments"'
+            references: '"roles"'
         },
         created_at: {
             type: 'timestamp',
@@ -60,4 +58,4 @@ export const up = (pgm) => {
  * @param run {() => void | undefined}
  * @returns {Promise<void> | void}
  */
-export const down = (pgm) => { };
+export const down = (pgm) => {};

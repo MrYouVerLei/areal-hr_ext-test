@@ -116,7 +116,7 @@ export class HrOperationsService {
 
         const department = await this.conn.query(`
                 SELECT id
-                FROM positions
+                FROM departments
                 WHERE id = $1 AND deleted_at IS NULL`,
             [department_id]
         );
