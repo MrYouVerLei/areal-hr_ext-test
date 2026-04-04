@@ -1,8 +1,8 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { PG_CONNECTION } from 'src/constants';
+import { PG_CONNECTION } from '../constants';
 import { EmployeeDto } from './dto/employee.dto';
-import { AddressesService } from 'src/addresses/addresses.service';
-import { PassportsService } from 'src/passports/passports.service';
+import { AddressesService } from '../addresses/addresses.service';
+import { PassportsService } from '../passports/passports.service';
 
 @Injectable()
 export class EmployeesService {

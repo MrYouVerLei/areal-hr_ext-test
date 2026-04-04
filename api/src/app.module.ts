@@ -16,7 +16,8 @@ import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [DbModule, ConfigModule.forRoot({
-    envFilePath: '../.env'
+    envFilePath: '../.env',
+    isGlobal: true
   }), OrganizationsModule, PositionsModule, DepartmentsModule, EmployeesModule, PassportsModule, AddressesModule, HrOperationsModule, UsersModule, ChangelogsModule, FilesModule],
   controllers: [AppController],
   providers: [AppService],

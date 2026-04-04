@@ -1,5 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { PG_CONNECTION } from 'src/constants';
+import { PG_CONNECTION } from '../constants';
 import { HrOperationDto } from './dto/hr-operation.dto';
 
 @Injectable()
