@@ -1,7 +1,27 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <HelloWorld />
+  <q-layout view="lHh lpR fFf">
+    <q-header elevated class="bg-primary text-white">
+      <q-toolbar>
+        <q-toolbar-title>
+          <q-avatar>
+            <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" />
+          </q-avatar>
+          HR
+        </q-toolbar-title>
+      </q-toolbar>
+    </q-header>
+
+    <q-drawer show-if-above side="left" bordered>
+      <q-item clickable v-ripple>
+        <q-item-section> Организации </q-item-section>
+      </q-item>
+      <q-item clickable v-ripple to="/employees">
+        <q-item-section> Сотрудники </q-item-section>
+      </q-item>
+    </q-drawer>
+
+    <q-page-container>
+      <RouterView />
+    </q-page-container>
+  </q-layout>
 </template>
