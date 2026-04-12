@@ -1,4 +1,4 @@
-import { Global, Inject, Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { Pool } from 'pg';
 import { PG_CONNECTION } from '../constants';
 import { ConfigService } from '@nestjs/config';
@@ -11,10 +11,10 @@ const dbProvider = {
       host: configService.get<string>('PGHOST'),
       database: configService.get<string>('PGDATABASE'),
       password: configService.get<string>('PGPASSWORD'),
-      port: configService.get<number>('PGPORT')
-    })
+      port: configService.get<number>('PGPORT'),
+    });
   },
-  inject: [ConfigService]
+  inject: [ConfigService],
 };
 
 @Global()
@@ -22,4 +22,4 @@ const dbProvider = {
   providers: [dbProvider],
   exports: [dbProvider],
 })
-export class DbModule { }
+export class DbModule {}

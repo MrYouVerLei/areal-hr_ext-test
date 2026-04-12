@@ -1,10 +1,19 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { HrOperationsService } from './hr-operations.service';
 import { HrOperationDto } from './dto/hr-operation.dto';
 
 @Controller('hr-operations')
 export class HrOperationsController {
-  constructor(private readonly hrOperationsService: HrOperationsService) { }
+  constructor(private readonly hrOperationsService: HrOperationsService) {}
 
   @Get()
   findAll() {
@@ -29,7 +38,7 @@ export class HrOperationsController {
   @Put(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() hrOperationDto: HrOperationDto
+    @Body() hrOperationDto: HrOperationDto,
   ) {
     return this.hrOperationsService.update(id, hrOperationDto);
   }

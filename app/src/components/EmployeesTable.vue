@@ -63,8 +63,8 @@ async function loadEmployeesData() {
       return {
         id: employee.id,
         fullName: `${employee.last_name} ${employee.first_name} ${employee.patronymic}`,
-        department: employee.department_name,
-        position: employee.position_name,
+        department: employee.department_name || "—",
+        position: employee?.position_name || "—",
         status: employee.deleted_as ? "Уволен" : "Работает",
       };
     });

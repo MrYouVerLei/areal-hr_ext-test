@@ -1,0 +1,24 @@
+services:
+  minio:
+    image: quay.io/minio/minio
+    restart: always
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD}
+    volumes:
+      - ./data:/data
+    command: server /data --console-address :9001
+  createbuckets:
+    image: quay.io/minio/mc
+    depends_on:
+      - minio
+    restart: on-failure
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set dockerminio http://minio:9000 ${MINIO_USER} ${MINIO_PASSWORD};
+      /usr/bin/mc mb dockerminio/${MINIO_BUCKET};
+      exit 0;
+      "

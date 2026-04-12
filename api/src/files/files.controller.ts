@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, FileTypeValidator, Get, Param, ParseFilePipe, ParseIntPipe, Post, Put, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { FileDto } from './dto/file.dto';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('files')
 export class FilesController {
@@ -22,15 +23,32 @@ export class FilesController {
   }
 
   @Post()
-  create(@Body() fileDto: FileDto) {
-    return this.filesService.create(fileDto);
+  @UseInterceptors(FilesInterceptor('files'))
+  create(@UploadedFiles(new ParseFilePipe({
+    validators: [
+      new FileTypeValidator({ fileType: '.(png|jpeg|jpg|pdf)' })
+    ],
+  })) files: Array<Express.Multer.File>, @Body() fileDto: FileDto) {
+    if (files.length == 0) {
+      throw new BadRequestException('Файл не прикреплён');
+    }
+    return Promise.all(files.map(file => this.filesService.create(file, fileDto)));
   }
 
   @Put(':id')
+  @UseInterceptors(FilesInterceptor('files'))
   update(
     @Param('id', ParseIntPipe) id: number,
+    @UploadedFile(new ParseFilePipe({
+      validators: [
+        new FileTypeValidator({ fileType: '.(png|jpeg|jpg|pdf)' })
+      ],
+    })) files: Array<Express.Multer.File>,
     @Body() fileDto: FileDto
   ) {
-    return this.filesService.update(id, fileDto);
+    if (files.length == 0) {
+      throw new BadRequestException('Файл не прикреплён');
+    }
+    return Promise.all(files.map(file => this.filesService.update(id, file, fileDto)));
   }
 }

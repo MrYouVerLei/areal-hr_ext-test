@@ -1,10 +1,45 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { PG_CONNECTION } from '../constants';
 import { FileDto } from './dto/file.dto';
+import * as Minio from 'minio';
+import { InjectMinio } from '../minio/minio.decorator';
+import { randomUUID } from 'crypto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class FilesService {
-    constructor(@Inject(PG_CONNECTION) private conn: any) { }
+    private readonly bucketName: string;
+
+    constructor(@Inject(PG_CONNECTION) private conn: any, @InjectMinio() private readonly minioService: Minio.Client, private configService: ConfigService) {
+        this.bucketName = this.configService.get<string>('MINIO_BUCKET') || 'files';
+    }
+
+    async getFile(filename: string) {
+        return await this.minioService.presignedUrl(
+            'GET',
+            this.bucketName,
+            filename,
+        );
+    }
+
+    uploadFile(file: Express.Multer.File): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const filename = `${randomUUID().toString()}-${file.originalname}`;
+            this.minioService.putObject(
+                this.bucketName,
+                filename,
+                file.buffer,
+                file.size,
+                (error) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(filename);
+                    }
+                },
+            );
+        });
+    }
 
     async findAll() {
         const res = await this.conn.query(`
@@ -12,7 +47,12 @@ export class FilesService {
                                     FROM files
                                     WHERE deleted_at IS NULL`);
 
-        return res.rows;
+        const resWithURL = await Promise.all(res.rows.map(async (row) => ({
+            ...row,
+            URL: await this.getFile(row.file_path)
+        })));
+
+        return resWithURL;
     }
 
     async findOne(id: number) {
@@ -27,34 +67,51 @@ export class FilesService {
             throw new NotFoundException('Файл не найден');
         }
 
-        return res.rows[0];
+        return {
+            ...res.rows[0],
+            URL: await this.getFile(res.rows[0].file_path)
+        };
     }
 
     async delete(id: number) {
-        const res = await this.conn.query(`
+        const filePath = await this.conn.query(`
+                    SELECT file_path
+                    FROM files
+                    WHERE id = $1 AND deleted_at IS NULL`,
+            [id]
+        );
+
+        if (filePath.rowCount === 0) {
+            throw new NotFoundException('Файл не найден');
+        }
+
+        await this.conn.query(`
                             UPDATE files
                             SET deleted_at = NOW()
                             WHERE id = $1 AND deleted_at IS NULL`,
             [id]
         );
 
-        if (res.rowCount === 0) {
-            throw new NotFoundException('Файл не найден');
-        }
+        await this.minioService.removeObject(this.bucketName, filePath.rows[0].file_path);
 
         return;
     }
 
-    async create(fileDto: FileDto) {
+    async create(file: Express.Multer.File, fileDto: FileDto) {
+        if (!file) {
+            throw new BadRequestException('Файл не прикреплён');
+        }
         await this.validateData(fileDto.employee_id);
+
+        const saveFileName = await this.uploadFile(file);
 
         const res = await this.conn.query(`
                             INSERT INTO files (name, file_path, employee_id)
                             VALUES ($1, $2, $3)
                             RETURNING *`,
             [
-                fileDto.name,
-                fileDto.file_path,
+                file.originalname,
+                saveFileName,
                 fileDto.employee_id
             ]
         );
@@ -62,8 +119,21 @@ export class FilesService {
         return res.rows[0];
     }
 
-    async update(id: number, fileDto: FileDto) {
+    async update(id: number, file: Express.Multer.File, fileDto: FileDto) {
         await this.validateData(fileDto.employee_id);
+
+        const oldFilePath = await this.conn.query(`
+                    SELECT file_path
+                    FROM files
+                    WHERE id = $1 AND deleted_at IS NULL`,
+            [id]
+        );
+
+        if (oldFilePath.rowCount === 0) {
+            throw new NotFoundException('Файл не найден');
+        }
+
+        const saveFileName = await this.uploadFile(file);
 
         const res = await this.conn.query(`
                             UPDATE files
@@ -71,16 +141,14 @@ export class FilesService {
                             WHERE id = $4 AND deleted_at IS NULL
                             RETURNING *`,
             [
-                fileDto.name,
-                fileDto.file_path,
+                file.originalname,
+                saveFileName,
                 fileDto.employee_id,
                 id
             ]
         );
 
-        if (res.rowCount === 0) {
-            throw new NotFoundException('Файл не найден');
-        }
+        await this.minioService.removeObject(this.bucketName, oldFilePath.rows[0].file_path);
 
         return res.rows[0];
     }

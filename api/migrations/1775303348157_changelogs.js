@@ -12,8 +12,9 @@ export const up = (pgm) => {
     pgm.createTable('changelogs', {
         id: 'id',
         date_time: {
-            type: 'date',
-            notNull: true
+            type: 'timestamp',
+            notNull: true,
+            default: pgm.func('current_timestamp')
         },
         object_type: {
             type: 'varchar(255)',

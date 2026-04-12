@@ -13,12 +13,28 @@ import { HrOperationsModule } from './hr-operations/hr-operations.module';
 import { UsersModule } from './users/users.module';
 import { ChangelogsModule } from './changelogs/changelogs.module';
 import { FilesModule } from './files/files.module';
+import { MinioModule } from './minio/minio.module';
 
 @Module({
-  imports: [DbModule, ConfigModule.forRoot({
-    envFilePath: '../.env',
-    isGlobal: true
-  }), OrganizationsModule, PositionsModule, DepartmentsModule, EmployeesModule, PassportsModule, AddressesModule, HrOperationsModule, UsersModule, ChangelogsModule, FilesModule],
+  imports: [
+    DbModule,
+    ChangelogsModule,
+    ConfigModule.forRoot({
+      envFilePath: '../.env',
+      isGlobal: true,
+    }),
+    OrganizationsModule,
+    PositionsModule,
+    DepartmentsModule,
+    EmployeesModule,
+    PassportsModule,
+    AddressesModule,
+    HrOperationsModule,
+    UsersModule,
+    ChangelogsModule,
+    FilesModule,
+    MinioModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
