@@ -3,14 +3,14 @@
     <div class="row justify-center">
       <div class="col-5">
         <q-input
-          class="font"
-          filled
-          debounce="300"
-          v-model="search"
-          placeholder="Поиск по ФИО"
+            class="font"
+            filled
+            debounce="300"
+            v-model="search"
+            placeholder="Поиск по ФИО"
         >
           <template v-slot:append>
-            <q-icon name="search" />
+            <q-icon name="search"/>
           </template>
         </q-input>
       </div>
@@ -19,10 +19,12 @@
       <div class="col-5">
         <div class="row q-col-gutter-x-md">
           <div class="col-6">
-            <q-select filled v-model="department" :options="departmentsOptions" option-value="id" option-label="name" label="Отдел" />
+            <q-select filled v-model="department" :options="departmentsOptions" option-value="id" option-label="name"
+                      label="Отдел"/>
           </div>
           <div class="col-6">
-            <q-select filled v-model="position" :options="positionsOptions" option-value="id" option-label="name" label="Должность" />
+            <q-select filled v-model="position" :options="positionsOptions" option-value="id" option-label="name"
+                      label="Должность"/>
           </div>
         </div>
       </div>
@@ -32,15 +34,15 @@
         <div class="row q-col-gutter-x-md">
           <div class="col-6">
             <q-btn
-              class="full-width"
-              color="indigo-1"
-              text-color="black"
-              label="Очистить"
-              @click="reset"
+                class="full-width"
+                color="indigo-1"
+                text-color="black"
+                label="Очистить"
+                @click="reset"
             />
           </div>
           <div class="col-6">
-            <q-btn class="full-width" color="primary" label="Найти" @click="applyFilter" />
+            <q-btn class="full-width" color="primary" label="Найти" @click="applyFilter"/>
           </div>
         </div>
       </div>
@@ -49,8 +51,10 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import {onMounted, onUnmounted, ref} from "vue";
+import {useEmployeesFilterStore} from "../stores/employees.js";
 
+const filter = useEmployeesFilterStore();
 const search = ref("");
 const department = ref(null);
 const position = ref(null);
@@ -61,7 +65,7 @@ async function loadDepartmentsData() {
   try {
     const response = await fetch(`${import.meta.env.VITE_API_URL}/departments`);
 
-    if (response.status != 200) {
+    if (!response.ok) {
       throw new Error("Ошибка загрузки данных");
     }
 
@@ -82,7 +86,7 @@ async function loadPositionsData() {
   try {
     const response = await fetch(`${import.meta.env.VITE_API_URL}/positions`);
 
-    if (response.status != 200) {
+    if (!response.ok) {
       throw new Error("Ошибка загрузки данных");
     }
 
@@ -103,15 +107,24 @@ function reset() {
   search.value = "";
   department.value = null;
   position.value = null;
+  filter.$reset();
 }
 
 function applyFilter() {
-  
+  filter.$patch({
+    name: search.value,
+    department: department.value?.id,
+    position: position.value?.id
+  });
 }
 
 onMounted(() => {
   loadDepartmentsData();
   loadPositionsData();
+});
+
+onUnmounted(() => {
+  filter.$reset();
 });
 </script>
 

@@ -1,14 +1,28 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UserDto } from './dto/user.dto';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   @Get()
   findAll() {
     return this.usersService.findAll();
+  }
+
+  @Get('check-unique-login/:login')
+  checkUniqueLogin(@Param('login') login: string) {
+    return this.usersService.checkUniqueLogin(login);
   }
 
   @Get(':id')
@@ -27,10 +41,7 @@ export class UsersController {
   }
 
   @Put(':id')
-  update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() userDto: UserDto
-  ) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() userDto: UserDto) {
     return this.usersService.update(id, userDto);
   }
 }

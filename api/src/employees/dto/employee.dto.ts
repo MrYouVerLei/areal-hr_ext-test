@@ -1,7 +1,15 @@
-import { Type } from "class-transformer";
-import { IsDateString, IsDefined, IsNotEmpty, IsOptional, IsString, MaxLength, ValidateNested } from "class-validator";
-import { AddressDto } from "../../addresses/dto/address.dto";
-import { PassportDto } from "../../passports/dto/passport.dto";
+import { Type } from 'class-transformer';
+import {
+  IsDateString,
+  IsDefined,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+  ValidateNested,
+} from 'class-validator';
+import { AddressDto } from '../../addresses/dto/address.dto';
+import { PassportDto } from '../../passports/dto/passport.dto';
 
 export class EmployeeDto {
   @IsString({ message: 'Фамилия должна быть строкой' })
@@ -22,7 +30,10 @@ export class EmployeeDto {
   /*
     неокончательный вариант проверки даты
   */
-  @IsDateString({}, { message: 'Дата рождения должна быть строкой в формате yyyy-mm-dd' })
+  @IsDateString(
+    {},
+    { message: 'Дата рождения должна быть строкой в формате yyyy-mm-dd' },
+  )
   @IsNotEmpty({ message: 'Дата рождения обязательна в заполнении' })
   birth_date: string;
 

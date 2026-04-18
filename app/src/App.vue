@@ -12,11 +12,16 @@
     </q-header>
 
     <q-drawer show-if-above side="left" bordered>
-      <q-item clickable v-ripple>
+      <q-item clickable v-ripple to="/organizations">
         <q-item-section> Организации </q-item-section>
+      </q-item><q-item clickable v-ripple to="/departments">
+        <q-item-section> Отделы </q-item-section>
       </q-item>
       <q-item clickable v-ripple to="/employees">
         <q-item-section> Сотрудники </q-item-section>
+      </q-item>
+      <q-item clickable v-ripple to="/users">
+        <q-item-section> Пользователи </q-item-section>
       </q-item>
     </q-drawer>
 

@@ -1,14 +1,28 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { DepartmentsService } from './departments.service';
 import { DepartmentDto } from './dto/department.dto';
 
 @Controller('departments')
 export class DepartmentsController {
-  constructor(private readonly departmentsService: DepartmentsService) { }
+  constructor(private readonly departmentsService: DepartmentsService) {}
 
   @Get()
   findAll() {
     return this.departmentsService.findAll();
+  }
+
+  @Get('tree/:id')
+  findAllInOrganization(@Param('id', ParseIntPipe) organizationId: number) {
+    return this.departmentsService.findAllInOrganization(organizationId);
   }
 
   @Get(':id')
@@ -27,7 +41,10 @@ export class DepartmentsController {
   }
 
   @Put(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() departmentDto: DepartmentDto) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() departmentDto: DepartmentDto,
+  ) {
     return this.departmentsService.update(id, departmentDto);
   }
 }

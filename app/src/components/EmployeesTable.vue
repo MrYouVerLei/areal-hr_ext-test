@@ -1,23 +1,6 @@
-<template>
-  <div class="q-pa-md">
-    <q-table
-      class="my-sticky-dynamic"
-      flat
-      bordered
-      :rows="rows"
-      :columns="columns"
-      :hide-bottom="true"
-      row-key="index"
-      virtual-scroll
-      :virtual-scroll-item-size="48"
-      :virtual-scroll-sticky-size-start="48"
-      :rows-per-page-options="[0]"
-    />
-  </div>
-</template>
-
 <script setup>
-import { onMounted, ref } from "vue";
+import {onMounted, ref} from "vue";
+import {useEmployeesFilterStore} from "../stores/employees.js";
 
 const columns = [
   {
@@ -48,12 +31,23 @@ const columns = [
 ];
 
 const rows = ref([]);
+const filter = useEmployeesFilterStore();
 
 async function loadEmployeesData() {
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/employees`);
+    const params = {};
+    if (filter.name) {
+      params.name = filter.name;
+    }
+    if (filter.department) {
+      params.department = filter.department;
+    }
+    if (filter.position) {
+      params.position = filter.position;
+    }
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/employees/detail?${new URLSearchParams(params).toString()}`);
 
-    if (response.status != 200) {
+    if (!response.ok) {
       throw new Error("Ошибка загрузки данных");
     }
 
@@ -73,10 +67,32 @@ async function loadEmployeesData() {
   }
 }
 
+filter.$subscribe((mutation, state) => {
+  loadEmployeesData();
+});
+
 onMounted(() => {
   loadEmployeesData();
 });
 </script>
+
+<template>
+  <div class="q-pa-md">
+    <q-table
+        class="my-sticky-dynamic"
+        flat
+        bordered
+        :rows="rows"
+        :columns="columns"
+        :hide-bottom="true"
+        row-key="index"
+        virtual-scroll
+        :virtual-scroll-item-size="48"
+        :virtual-scroll-sticky-size-start="48"
+        :rows-per-page-options="[0]"
+    />
+  </div>
+</template>
 
 <style lang="sass">
 .my-sticky-dynamic

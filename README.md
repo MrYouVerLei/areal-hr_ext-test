@@ -1,6 +1,6 @@
 ## Используемые инструменты
 **Операционная система:** Windows 10 с установленным Docker Desktop  
-**IDE:** Visual Studio Code  
+**IDE:** ~~Visual Studio Code~~ WebStorm  
 **СУБД:** PostgreSQL 18, установленный в ОС
 
 ## Используемые команды Git

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, MaxLength } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class AddressDto {
   @IsString({ message: 'Регион должен быть строкой' })
@@ -7,7 +7,9 @@ export class AddressDto {
   region: string;
 
   @IsString({ message: 'Населённый пункт должен быть строкой' })
-  @MaxLength(255, { message: 'Населённый пункт не может быть больше 255 символов' })
+  @MaxLength(255, {
+    message: 'Населённый пункт не может быть больше 255 символов',
+  })
   @IsNotEmpty({ message: 'Населённый пункт обязателен в заполнении' })
   locality: string;
 

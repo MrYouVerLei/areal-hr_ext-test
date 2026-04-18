@@ -1,4 +1,12 @@
-import { IsDateString, IsInt, IsNotEmpty, IsNumber, IsPositive, IsString, MaxLength } from "class-validator";
+import {
+  IsDateString,
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsPositive,
+  IsString,
+  MaxLength,
+} from 'class-validator';
 
 export class HrOperationDto {
   @IsNumber({}, { message: 'Зарплата должна быть числом' })
