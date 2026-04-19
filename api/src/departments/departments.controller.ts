@@ -10,6 +10,8 @@ import {
 } from '@nestjs/common';
 import { DepartmentsService } from './departments.service';
 import { DepartmentDto } from './dto/department.dto';
+import { Roles } from '../roles/roles.decorator';
+import { Role } from '../roles/role.enum';
 
 @Controller('departments')
 export class DepartmentsController {
@@ -30,16 +32,19 @@ export class DepartmentsController {
     return this.departmentsService.findOne(id);
   }
 
+  @Roles(Role.Admin)
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.departmentsService.delete(id);
   }
 
+  @Roles(Role.Admin)
   @Post()
   create(@Body() departmentDto: DepartmentDto) {
     return this.departmentsService.create(departmentDto);
   }
 
+  @Roles(Role.Admin)
   @Put(':id')
   update(
     @Param('id', ParseIntPipe) id: number,

@@ -16,6 +16,7 @@ import { FilesModule } from './files/files.module';
 import { MinioModule } from './minio/minio.module';
 import { AuthModule } from './auth/auth.module';
 import { AuthenticatedGuard } from './guards/authenticated.guard';
+import { RolesGuard } from './guards/roles.guard';
 
 @Module({
   imports: [
@@ -44,6 +45,10 @@ import { AuthenticatedGuard } from './guards/authenticated.guard';
     {
       provide: 'APP_GUARD',
       useClass: AuthenticatedGuard,
+    },
+    {
+      provide: 'APP_GUARD',
+      useClass: RolesGuard,
     },
   ],
 })
