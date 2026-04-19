@@ -21,7 +21,7 @@ const rows = ref([]);
 
 async function loadDepartmentsData() {
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/departments `);
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/departments `, {credentials: 'include'});
 
     if (!response.ok) {
       throw new Error("Ошибка загрузки данных");

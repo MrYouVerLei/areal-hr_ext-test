@@ -40,7 +40,7 @@ function open() {
 
 async function transform(organizationId) {
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/departments/tree/${organizationId}`);
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/departments/tree/${organizationId}`, {credentials: "include"});
 
     if (!response.ok) {
       throw new Error("Ошибка загрузки данных");

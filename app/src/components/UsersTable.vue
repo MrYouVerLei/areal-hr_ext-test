@@ -29,7 +29,7 @@ const rows = ref([]);
 
 async function loadUsersData() {
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/users`);
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/users`, {credentials: 'include'});
 
     if (!response.ok) {
       throw new Error("Ошибка загрузки данных");

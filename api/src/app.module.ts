@@ -14,6 +14,8 @@ import { UsersModule } from './users/users.module';
 import { ChangelogsModule } from './changelogs/changelogs.module';
 import { FilesModule } from './files/files.module';
 import { MinioModule } from './minio/minio.module';
+import { AuthModule } from './auth/auth.module';
+import { AuthenticatedGuard } from './guards/authenticated.guard';
 
 @Module({
   imports: [
@@ -34,8 +36,15 @@ import { MinioModule } from './minio/minio.module';
     ChangelogsModule,
     FilesModule,
     MinioModule,
+    AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: 'APP_GUARD',
+      useClass: AuthenticatedGuard,
+    },
+  ],
 })
 export class AppModule {}

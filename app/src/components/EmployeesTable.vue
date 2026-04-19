@@ -45,7 +45,7 @@ async function loadEmployeesData() {
     if (filter.position) {
       params.position = filter.position;
     }
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/employees/detail?${new URLSearchParams(params).toString()}`);
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/employees/detail?${new URLSearchParams(params).toString()}`, {credentials: 'include'});
 
     if (!response.ok) {
       throw new Error("Ошибка загрузки данных");

@@ -63,7 +63,7 @@ const positionsOptions = ref([]);
 
 async function loadDepartmentsData() {
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/departments`);
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/departments`, {credentials: 'include'});
 
     if (!response.ok) {
       throw new Error("Ошибка загрузки данных");
@@ -84,7 +84,7 @@ async function loadDepartmentsData() {
 
 async function loadPositionsData() {
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/positions`);
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/positions`, {credentials: 'include'});
 
     if (!response.ok) {
       throw new Error("Ошибка загрузки данных");

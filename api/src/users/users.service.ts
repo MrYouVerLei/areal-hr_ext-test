@@ -25,8 +25,26 @@ export class UsersService {
                 FROM users
                 LEFT JOIN roles
                 ON users.role_id = roles.id
-                WHERE id = $1 AND deleted_at IS NULL`,
+                WHERE users.id = $1 AND deleted_at IS NULL`,
       [id],
+    );
+
+    if (res.rows.length === 0) {
+      throw new NotFoundException('Пользователь не найден');
+    }
+
+    return res.rows[0];
+  }
+
+  async findOneByLogin(login: string) {
+    const res = await this.conn.query(
+      `
+                SELECT users.*, roles.name AS role_name
+                FROM users
+                LEFT JOIN roles
+                ON users.role_id = roles.id
+                WHERE users.login = $1 AND deleted_at IS NULL`,
+      [login],
     );
 
     if (res.rows.length === 0) {
