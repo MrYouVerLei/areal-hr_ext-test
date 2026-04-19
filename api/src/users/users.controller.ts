@@ -12,12 +12,15 @@ import { UsersService } from './users.service';
 import { UserDto } from './dto/user.dto';
 import { Roles } from '../roles/roles.decorator';
 import { Role } from '../roles/role.enum';
+import { CheckAbilities } from '../casl/abilities.decorator';
+import { Action } from '../casl/action.enum';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Roles(Role.Admin)
+  @CheckAbilities({ action: Action.Read, subject: 'User' }) // тест
   @Get()
   findAll() {
     return this.usersService.findAll();

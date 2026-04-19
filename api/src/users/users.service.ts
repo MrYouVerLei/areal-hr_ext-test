@@ -21,11 +21,16 @@ export class UsersService {
   async findOne(id: number) {
     const res = await this.conn.query(
       `
-                SELECT users.*, roles.name AS role_name
+                SELECT users.*, roles.name AS role_name, JSON_AGG(
+                  JSON_BUILD_OBJECT('action', permissions.action, 'subject', permissions.subject)
+                                                         ) AS permissions
                 FROM users
                 LEFT JOIN roles
                 ON users.role_id = roles.id
-                WHERE users.id = $1 AND deleted_at IS NULL`,
+                LEFT JOIN permissions
+                ON roles.id = permissions.role_id
+                WHERE users.id = $1 AND users.deleted_at IS NULL
+                GROUP BY users.id, roles.name`,
       [id],
     );
 

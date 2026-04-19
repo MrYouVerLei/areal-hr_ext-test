@@ -17,6 +17,9 @@ import { MinioModule } from './minio/minio.module';
 import { AuthModule } from './auth/auth.module';
 import { AuthenticatedGuard } from './guards/authenticated.guard';
 import { RolesGuard } from './guards/roles.guard';
+import { CaslModule } from './casl/casl.module';
+import { PermissionsModule } from './permissions/permissions.module';
+import { AbilitiesGuard } from './guards/abilities.guard';
 
 @Module({
   imports: [
@@ -38,6 +41,8 @@ import { RolesGuard } from './guards/roles.guard';
     FilesModule,
     MinioModule,
     AuthModule,
+    CaslModule,
+    PermissionsModule,
   ],
   controllers: [AppController],
   providers: [
@@ -48,8 +53,12 @@ import { RolesGuard } from './guards/roles.guard';
     },
     {
       provide: 'APP_GUARD',
-      useClass: RolesGuard,
+      useClass: AbilitiesGuard,
     },
+    // {
+    //   provide: 'APP_GUARD',
+    //   useClass: RolesGuard,
+    // },
   ],
 })
 export class AppModule {}
