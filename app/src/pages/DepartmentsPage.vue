@@ -1,12 +1,33 @@
 <template>
   <div class="q-pa-md q-gutter-md">
-    <div class="q-pa-md q-gutter-sm">
+    <div class="q-px-xl q-py-md q-mx-xl">
+      <q-select filled v-model="organization" :options="organizationsOptions" option-value="id" option-label="name"
+                label="Организация"/>
+    </div>
+    <div class="q-px-xl q-mx-xl">
+      <q-input ref="filterRef" filled v-model="filter" label="Фильтр">
+        <template v-slot:append>
+          <q-icon
+              v-if="filter !== ''"
+              name="clear"
+              class="cursor-pointer"
+              @click="resetFilter"
+          />
+        </template>
+      </q-input>
       <q-tree
           :nodes="tree"
           node-key="id"
           default-expand-all
           v-if="tree.length > 0"
-      />
+          :filter="filter"
+      >
+        <template v-slot:default-body="prop">
+          <div v-if="prop.node.comment">
+            {{ prop.node.comment }}
+          </div>
+        </template>
+      </q-tree>
     </div>
     <div class="fixed-bottom-right q-pa-lg">
       <q-btn round color="primary" icon="add" size="lg" @click="open"/>
@@ -17,25 +38,63 @@
 
 <script setup>
 import {useQuasar} from "quasar";
-import CreateOrganizationDialog from "../components/CreateOrganizationDialog.vue";
-import {onMounted, ref} from "vue";
+import {onMounted, ref, watch} from "vue";
+import CreateDepartmentDialog from "../components/CreateDepartmentDialog.vue";
 
-// переменная для колхозного обновления дочернего компонета (таблицы)
-const componentKey = ref(0);
+const organization = ref(null);
+const organizationsOptions = ref([]);
 const tree = ref([]);
+const filter = ref('')
+const filterRef = ref(null)
 const $q = useQuasar();
 
 function open() {
   $q.dialog({
-    component: CreateOrganizationDialog,
+    component: CreateDepartmentDialog,
 
     componentProps: {
       text: "something",
       persistent: true,
     },
   }).onOk(() => {
-    componentKey.value++;
+    updateTree();
   });
+}
+
+function resetFilter() {
+  filter.value = ''
+  filterRef.value.focus()
+}
+
+async function loadOrganizationsData() {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/organizations`, {credentials: 'include'});
+
+    if (!response.ok) {
+      throw new Error("Ошибка загрузки данных");
+    }
+
+    const data = await response.json();
+
+    const options = data.map((organization) => {
+      return {
+        id: organization.id,
+        name: organization.name,
+      };
+    });
+
+    organizationsOptions.value = [
+      {
+        id: 0,
+        name: "Все"
+      },
+      ...options,
+    ];
+
+    organization.value = organizationsOptions.value[0];
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 async function transform(organizationId) {
@@ -49,14 +108,19 @@ async function transform(organizationId) {
     const data = await response.json();
 
     const map = {};
-    const treeTmp = [{
-      label: "Название организации",
+    const treeTmp = {
+      id: `id-${organizationId}`,
+      label: organizationsOptions.value.find(item => item.id === organizationId).name,
+      icon: "business",
+      comment: organizationsOptions.value.find(item => item.id === organizationId).comment,
       children: []
-    }];
+    };
 
     data.forEach(item => {
       map[item.id] = {
+        id: item.id,
         label: item.name,
+        comment: item.comment,
         children: [],
         ...item
       };
@@ -66,20 +130,46 @@ async function transform(organizationId) {
       if (item.parent_id && map[item.parent_id]) {
         map[item.parent_id].children.push(map[item.id]);
       } else {
-        treeTmp[0].children.push(map[item.id]);
+        treeTmp.children.push(map[item.id]);
       }
     });
 
-    tree.value = treeTmp;
-
+    return treeTmp;
   } catch (err) {
     console.error(err);
   }
 }
 
+async function updateTree() {
+  tree.value = [];
+
+  if (organization.value.id === 0) {
+    const root = [{
+      id: "root",
+      label: "Все организации",
+      children: []
+    }];
+
+    for (const item of organizationsOptions.value) {
+      if (item.id !== 0) {
+        const treeTmp = await transform(item.id);
+        root[0].children.push(treeTmp);
+      }
+    }
+
+    tree.value = root;
+  } else {
+    tree.value = [await transform(organization.value.id)];
+  }
+}
+
 onMounted(() => {
-  transform(4);
-})
+  loadOrganizationsData();
+});
+
+watch(organization, () => {
+  updateTree()
+});
 </script>
 
 <style lang="sass">

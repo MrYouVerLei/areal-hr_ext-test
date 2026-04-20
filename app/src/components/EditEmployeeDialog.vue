@@ -168,6 +168,7 @@
                   multiple
                   style="max-width: 300px"
                   hint="Допустимые форматы: JPG, PNG, PDF"
+                  accept=".jpg .jpeg .png .pdf"
               >
                 <template v-slot:prepend>
                   <q-icon name="attach_file"/>

@@ -4,72 +4,76 @@ import { OrganizationDto } from './dto/organization.dto';
 
 @Injectable()
 export class OrganizationsService {
-    constructor(@Inject(PG_CONNECTION) private conn: any) { }
+  constructor(@Inject(PG_CONNECTION) private conn: any) {}
 
-    async findAll() {
-        const res = await this.conn.query(`
-            SELECT *
-            FROM organizations
-            WHERE deleted_at IS NULL`
-        );
+  async findAll() {
+    const res = await this.conn.query(`
+          SELECT *
+          FROM organizations
+          WHERE deleted_at IS NULL
+          ORDER BY name`);
 
-        return res.rows;
-    }
+    return res.rows;
+  }
 
-    async findOne(id: number) {
-        const res = await this.conn.query(`
+  async findOne(id: number) {
+    const res = await this.conn.query(
+      `
             SELECT *
             FROM organizations
             WHERE id = $1 AND deleted_at IS NULL`,
-            [id]
-        );
+      [id],
+    );
 
-        if (res.rows.length === 0) {
-            throw new NotFoundException('Организация не найдена');
-        }
-
-        return res.rows[0];
+    if (res.rows.length === 0) {
+      throw new NotFoundException('Организация не найдена');
     }
 
-    async delete(id: number) {
-        const res = await this.conn.query(`
+    return res.rows[0];
+  }
+
+  async delete(id: number) {
+    const res = await this.conn.query(
+      `
             UPDATE organizations
             SET deleted_at = NOW()
             WHERE id = $1 AND deleted_at IS NULL`,
-            [id]
-        );
+      [id],
+    );
 
-        if (res.rowCount === 0) {
-            throw new NotFoundException('Организация не найдена');
-        }
-
-        return;
+    if (res.rowCount === 0) {
+      throw new NotFoundException('Организация не найдена');
     }
 
-    async create(organizationDto: OrganizationDto) {
-        const res = await this.conn.query(`
+    return;
+  }
+
+  async create(organizationDto: OrganizationDto) {
+    const res = await this.conn.query(
+      `
             INSERT INTO organizations (name, comment)
             VALUES ($1, $2)
             RETURNING *`,
-            [organizationDto.name, organizationDto.comment]
-        );
+      [organizationDto.name, organizationDto.comment],
+    );
 
-        return res.rows[0];
-    }
+    return res.rows[0];
+  }
 
-    async update(id: number, organizationDto: OrganizationDto) {
-        const res = await this.conn.query(`
+  async update(id: number, organizationDto: OrganizationDto) {
+    const res = await this.conn.query(
+      `
             UPDATE organizations
             SET name = $1, comment = $2, updated_at = NOW()
             WHERE id = $3 AND deleted_at IS NULL
             RETURNING *`,
-            [organizationDto.name, organizationDto.comment, id]
-        );
+      [organizationDto.name, organizationDto.comment, id],
+    );
 
-        if (res.rowCount === 0) {
-            throw new NotFoundException('Организация не найдена');
-        }
-
-        return res.rows[0];
+    if (res.rowCount === 0) {
+      throw new NotFoundException('Организация не найдена');
     }
+
+    return res.rows[0];
+  }
 }

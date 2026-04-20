@@ -15,7 +15,8 @@ export class DepartmentsService {
     const res = await this.conn.query(`
                     SELECT *
                     FROM departments
-                    WHERE deleted_at IS NULL`);
+                    WHERE deleted_at IS NULL
+                    ORDER BY name`);
 
     return res.rows;
   }
