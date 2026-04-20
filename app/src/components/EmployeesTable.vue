@@ -4,6 +4,7 @@ import {useEmployeesFilterStore} from "../stores/employees.js";
 import {useQuasar} from "quasar";
 import InfoEmployeeDialog from "./InfoEmployeeDialog.vue";
 import DeleteEmployeeDialog from "./DeleteEmployeeDialog.vue";
+import EditEmployeeDialog from "./EditEmployeeDialog.vue";
 
 const columns = [
   {
@@ -100,6 +101,19 @@ function openDeleteDialog(employeeId) {
   });
 }
 
+function openEditDialog(employeeId) {
+  $q.dialog({
+    component: EditEmployeeDialog,
+
+    componentProps: {
+      id: employeeId,
+      persistent: true,
+    },
+  }).onOk(() => {
+    loadEmployeesData();
+  });
+}
+
 filter.$subscribe((mutation, state) => {
   loadEmployeesData();
 });
@@ -132,7 +146,7 @@ onMounted(() => {
                 <q-item clickable v-close-popup @click="openInfoDialog(props.row.id)">
                   <q-item-section>Подробнее</q-item-section>
                 </q-item>
-                <q-item clickable v-close-popup>
+                <q-item clickable v-close-popup @click="openEditDialog(props.row.id)">
                   <q-item-section>Редактировать</q-item-section>
                 </q-item>
                 <q-item v-if="props.row.status !== 'Уволен'" clickable v-close-popup @click="openDeleteDialog(props.row.id)">

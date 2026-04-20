@@ -36,6 +36,14 @@ export class FilesController {
     return this.filesService.findOne(id);
   }
 
+  @Delete('array')
+  removeArray(@Body('ids') ids: Array<number>) {
+    if (ids.length == 0) {
+      throw new BadRequestException('Массив файлов пуст');
+    }
+    return Promise.all(ids.map((id) => this.filesService.delete(id)));
+  }
+
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.filesService.delete(id);

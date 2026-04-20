@@ -76,7 +76,7 @@ async function loadEmployeeData(id) {
 async function loadFilesData(id) {
   try {
     const params = {
-      employee_id: id
+      employee: id
     };
 
     const response = await fetch(`${import.meta.env.VITE_API_URL}/files?${new URLSearchParams(params).toString()}`, {credentials: 'include'});

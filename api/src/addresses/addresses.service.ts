@@ -65,7 +65,7 @@ export class AddressesService {
 
   async update(id: number, addressDto: AddressDto) {
     const res = await this.conn.query(`
-                UPDATE positiaddressesons
+                UPDATE addresses
                 SET region = $1, locality = $2, street = $3, house = $4, corps = $5, apartment = $6, updated_at = NOW()
                 WHERE id = $7 AND deleted_at IS NULL
                 RETURNING *`,
