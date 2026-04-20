@@ -26,14 +26,15 @@ async function logout() {
             <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg"/>
           </q-avatar>
           HR
-          <q-btn
-              flat
-              round
-              dense
-              icon="logout"
-              @click="logout">
-          </q-btn>
         </q-toolbar-title>
+        <q-btn
+
+            flat
+            round
+            dense
+            icon="logout"
+            @click="logout">
+        </q-btn>
       </q-toolbar>
     </q-header>
 

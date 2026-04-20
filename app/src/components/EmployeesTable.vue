@@ -1,6 +1,9 @@
 <script setup>
 import {onMounted, ref} from "vue";
 import {useEmployeesFilterStore} from "../stores/employees.js";
+import {useQuasar} from "quasar";
+import InfoEmployeeDialog from "./InfoEmployeeDialog.vue";
+import DeleteEmployeeDialog from "./DeleteEmployeeDialog.vue";
 
 const columns = [
   {
@@ -26,6 +29,10 @@ const columns = [
     name: "status",
     label: "Статус",
     field: (row) => row.status,
+    align: "center",
+  },
+  {
+    name: "actions",
     align: "center",
   },
 ];
@@ -59,12 +66,38 @@ async function loadEmployeesData() {
         fullName: `${employee.last_name} ${employee.first_name} ${employee.patronymic}`,
         department: employee.department_name || "—",
         position: employee?.position_name || "—",
-        status: employee.deleted_as ? "Уволен" : "Работает",
+        status: employee.deleted_at ? "Уволен" : "Работает",
       };
     });
   } catch (err) {
     console.error(err);
   }
+}
+
+const $q = useQuasar();
+
+function openInfoDialog(employeeId) {
+  $q.dialog({
+    component: InfoEmployeeDialog,
+
+    componentProps: {
+      id: employeeId,
+      persistent: true,
+    },
+  });
+}
+
+function openDeleteDialog(employeeId) {
+  $q.dialog({
+    component: DeleteEmployeeDialog,
+
+    componentProps: {
+      id: employeeId,
+      persistent: true,
+    },
+  }).onOk(() => {
+    loadEmployeesData();
+  });
 }
 
 filter.$subscribe((mutation, state) => {
@@ -90,7 +123,27 @@ onMounted(() => {
         :virtual-scroll-item-size="48"
         :virtual-scroll-sticky-size-start="48"
         :rows-per-page-options="[0]"
-    />
+    >
+      <template v-slot:body-cell-actions="props">
+        <q-td :props="props">
+          <q-btn flat round icon="more_vert">
+            <q-menu>
+              <q-list dense style="min-width: 100px">
+                <q-item clickable v-close-popup @click="openInfoDialog(props.row.id)">
+                  <q-item-section>Подробнее</q-item-section>
+                </q-item>
+                <q-item clickable v-close-popup>
+                  <q-item-section>Редактировать</q-item-section>
+                </q-item>
+                <q-item v-if="props.row.status !== 'Уволен'" clickable v-close-popup @click="openDeleteDialog(props.row.id)">
+                  <q-item-section>Уволить</q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </q-btn>
+        </q-td>
+      </template>
+    </q-table>
   </div>
 </template>
 
