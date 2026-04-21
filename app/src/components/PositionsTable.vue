@@ -8,20 +8,14 @@ const columns = [
     field: (row) => row.name,
     align: "center",
     sortable: true,
-  },
-  {
-    name: "comment",
-    label: "Комментарий",
-    field: (row) => row.comment,
-    align: "left",
-  },
+  }
 ];
 
 const rows = ref([]);
 
-async function loadOrganizationsData() {
+async function loadPositionsData() {
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/organizations`, {credentials: 'include'});
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/positions`, {credentials: 'include'});
 
     if (!response.ok) {
       throw new Error("Ошибка загрузки данных");
@@ -29,11 +23,10 @@ async function loadOrganizationsData() {
 
     const data = await response.json();
 
-    rows.value = data.map((organization) => {
+    rows.value = data.map((position) => {
       return {
-        id: organization.id,
-        name: organization.name,
-        comment: organization.comment || "—",
+        id: position.id,
+        name: position.name
       };
     });
   } catch (err) {
@@ -42,12 +35,12 @@ async function loadOrganizationsData() {
 }
 
 onMounted(() => {
-  loadOrganizationsData();
+  loadPositionsData();
 });
 </script>
 
 <template>
-  <div class="q-pa-md q-mx-auto" style="width: 900px; max-width: 90vw">
+  <div class="q-pa-md q-mx-auto" style="width: 500px; max-width: 50vw">
     <q-table
         class="my-sticky-dynamic"
         flat

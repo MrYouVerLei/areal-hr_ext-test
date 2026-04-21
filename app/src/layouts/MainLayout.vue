@@ -40,16 +40,34 @@ async function logout() {
 
     <q-drawer show-if-above side="left" bordered>
       <q-item clickable v-ripple to="/organizations">
-        <q-item-section> Организации</q-item-section>
+        <q-item-section avatar>
+          <q-icon name="business"/>
+        </q-item-section>
+        <q-item-section class="text-h6 q-py-sm"> Организации</q-item-section>
       </q-item>
       <q-item clickable v-ripple to="/departments">
-        <q-item-section> Отделы</q-item-section>
+        <q-item-section avatar>
+          <q-icon name="schema"/>
+        </q-item-section>
+        <q-item-section class="text-h6 q-py-sm"> Отделы</q-item-section>
+      </q-item>
+      <q-item clickable v-ripple to="/positions">
+        <q-item-section avatar>
+          <q-icon name="badge"/>
+        </q-item-section>
+        <q-item-section class="text-h6 q-py-sm"> Должности</q-item-section>
       </q-item>
       <q-item clickable v-ripple to="/employees">
-        <q-item-section> Сотрудники</q-item-section>
+        <q-item-section avatar>
+          <q-icon name="people"/>
+        </q-item-section>
+        <q-item-section class="text-h6 q-py-sm"> Сотрудники</q-item-section>
       </q-item>
       <q-item clickable v-ripple to="/users">
-        <q-item-section> Пользователи</q-item-section>
+        <q-item-section avatar>
+          <q-icon name="manage_accounts"/>
+        </q-item-section>
+        <q-item-section class="text-h6 q-py-sm"> Пользователи</q-item-section>
       </q-item>
     </q-drawer>
 

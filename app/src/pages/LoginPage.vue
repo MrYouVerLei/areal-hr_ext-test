@@ -19,28 +19,12 @@ async function login() {
     });
 
     if (response.ok) {
-      router.push("/employees");
+      await router.push("/employees");
     }
   } catch (err) {
     console.error(err);
   }
 }
-
-onMounted(async () => {
-  try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/status`, {credentials: 'include'});
-
-    if (response.ok) {
-      const data = await response.json();
-
-      if (data.result) {
-        router.push("/employees");
-      }
-    }
-  } catch (err) {
-    console.error(err);
-  }
-})
 </script>
 
 <template>
