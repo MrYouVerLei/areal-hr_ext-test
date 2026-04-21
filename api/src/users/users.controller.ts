@@ -14,6 +14,7 @@ import { Roles } from '../roles/roles.decorator';
 import { Role } from '../roles/role.enum';
 import { CheckAbilities } from '../casl/abilities.decorator';
 import { Action } from '../casl/action.enum';
+import { Public } from '../auth/public.decorator';
 
 @Controller('users')
 export class UsersController {

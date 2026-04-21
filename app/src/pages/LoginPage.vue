@@ -1,6 +1,7 @@
 <script setup>
 import {onMounted, ref} from "vue";
 import {router} from "../router/routes.js";
+import {useQuasar} from "quasar";
 
 const formData = ref({
   login: '',
@@ -8,6 +9,7 @@ const formData = ref({
 });
 
 const isPwd = ref(true);
+const $q = useQuasar()
 
 async function login() {
   try {
@@ -20,9 +22,22 @@ async function login() {
 
     if (response.ok) {
       await router.push("/employees");
+    } else {
+      $q.notify({
+        type: 'negative',
+        position: 'top',
+        message: 'Неверный логин или пароль',
+        timeout: 1000
+      });
     }
   } catch (err) {
     console.error(err);
+    $q.notify({
+      type: 'negative',
+      position: 'top',
+      message: 'Неверный логин или пароль',
+      timeout: 1000
+    });
   }
 }
 </script>

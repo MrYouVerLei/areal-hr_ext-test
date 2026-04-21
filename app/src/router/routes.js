@@ -7,6 +7,7 @@ import LoginPage from "../pages/LoginPage.vue";
 import MainLayout from "../layouts/MainLayout.vue";
 import LoginLayout from "../layouts/LoginLayout.vue";
 import PositionsPage from "../pages/PositionsPage.vue";
+import AccountPage from "../pages/AccountPage.vue";
 
 const routes = [
     {
@@ -23,7 +24,8 @@ const routes = [
             {path: 'organizations', component: OrganizationsPage, meta: {requiresAuth: true}},
             {path: 'departments', component: DepartmentsPage, meta: {requiresAuth: true}},
             {path: 'positions', component: PositionsPage, meta: {requiresAuth: true}},
-            {path: 'users', component: UsersPage, meta: {requiresAuth: true}}
+            {path: 'users', component: UsersPage, meta: {requiresAuth: true}},
+            {path: 'account', component: AccountPage, meta: {requiresAuth: true}},
         ]
     },
 ]

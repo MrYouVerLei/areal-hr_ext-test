@@ -39,6 +39,12 @@ async function logout() {
     </q-header>
 
     <q-drawer show-if-above side="left" bordered>
+      <q-item clickable v-ripple to="/account">
+        <q-item-section avatar>
+          <q-icon name="person"/>
+        </q-item-section>
+        <q-item-section class="text-h6 q-py-sm"> Аккаунт</q-item-section>
+      </q-item>
       <q-item clickable v-ripple to="/organizations">
         <q-item-section avatar>
           <q-icon name="business"/>

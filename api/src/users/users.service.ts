@@ -114,6 +114,8 @@ export class UsersService {
   async update(id: number, userDto: UserDto) {
     await this.validateData(userDto.role_id);
 
+    const hash = await argon2.hash(userDto.password);
+
     const res = await this.conn.query(
       `
                         UPDATE users
@@ -122,7 +124,7 @@ export class UsersService {
                         RETURNING *`,
       [
         userDto.login,
-        userDto.password,
+        hash,
         userDto.last_name,
         userDto.first_name,
         userDto.patronymic,

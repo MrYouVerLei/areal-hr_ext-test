@@ -35,7 +35,7 @@ export class AuthController {
   @Get('status')
   getStatus(@Req() req) {
     if (req.isAuthenticated()) {
-      return { result: true };
+      return { result: true, user: req.user };
     } else {
       return { result: false };
     }
