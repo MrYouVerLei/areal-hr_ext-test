@@ -5,6 +5,9 @@ import {useQuasar} from "quasar";
 import InfoEmployeeDialog from "./InfoEmployeeDialog.vue";
 import DeleteEmployeeDialog from "./DeleteEmployeeDialog.vue";
 import EditEmployeeDialog from "./EditEmployeeDialog.vue";
+import ChangePositionEmployeeDialog from "./ChangePositionEmployeeDialog.vue";
+import ChangeDepartmentEmployeeDialog from "./ChangeDepartmentEmployeeDialog.vue";
+import ChangeSalaryEmployeeDialog from "./ChangeSalaryEmployeeDialog.vue";
 
 const columns = [
   {
@@ -114,6 +117,43 @@ function openEditDialog(employeeId) {
   });
 }
 
+function openChangePositionDialog(employeeId) {
+  $q.dialog({
+    component: ChangePositionEmployeeDialog,
+
+    componentProps: {
+      id: employeeId,
+      persistent: true,
+    },
+  }).onOk(() => {
+    loadEmployeesData();
+  });
+}
+
+function openChangeDepartmentDialog(employeeId) {
+  $q.dialog({
+    component: ChangeDepartmentEmployeeDialog,
+
+    componentProps: {
+      id: employeeId,
+      persistent: true,
+    },
+  }).onOk(() => {
+    loadEmployeesData();
+  });
+}
+
+function openChangeSalaryDialog(employeeId) {
+  $q.dialog({
+    component: ChangeSalaryEmployeeDialog,
+
+    componentProps: {
+      id: employeeId,
+      persistent: true,
+    },
+  });
+}
+
 filter.$subscribe((mutation, state) => {
   loadEmployeesData();
 });
@@ -149,8 +189,30 @@ onMounted(() => {
                 <q-item clickable v-close-popup @click="openEditDialog(props.row.id)">
                   <q-item-section>Редактировать</q-item-section>
                 </q-item>
-                <q-item v-if="props.row.status !== 'Уволен'" clickable v-close-popup @click="openDeleteDialog(props.row.id)">
-                  <q-item-section>Уволить</q-item-section>
+                <q-separator/>
+                <q-item v-if="props.row.status !== 'Уволен'" clickable>
+                  <q-item-section>Операции</q-item-section>
+                  <q-item-section side>
+                    <q-icon name="keyboard_arrow_right"/>
+                  </q-item-section>
+
+                  <q-menu anchor="top end" self="top start">
+                    <q-list dense style="min-width: 100px">
+                      <q-item clickable v-close-popup @click="openChangeSalaryDialog(props.row.id)">
+                        <q-item-section>Изменить зарплату</q-item-section>
+                      </q-item>
+                      <q-item clickable v-close-popup @click="openChangeDepartmentDialog(props.row.id)">
+                        <q-item-section>Изменить отдел</q-item-section>
+                      </q-item>
+                      <q-item clickable v-close-popup @click="openChangePositionDialog(props.row.id)">
+                        <q-item-section>Изменить должность</q-item-section>
+                      </q-item>
+                      <q-item clickable v-close-popup
+                              @click="openDeleteDialog(props.row.id)">
+                        <q-item-section>Уволить</q-item-section>
+                      </q-item>
+                    </q-list>
+                  </q-menu>
                 </q-item>
               </q-list>
             </q-menu>

@@ -136,7 +136,7 @@
                             transition-show="scale"
                             transition-hide="scale"
                         >
-                          <q-date v-model="formPassportData.issue_date" mask="YYYY-MM-DD" v-close-popup >
+                          <q-date v-model="formPassportData.issue_date" mask="YYYY-MM-DD" v-close-popup>
                             <div class="row items-center justify-end">
                               <q-btn v-close-popup label="Close" color="primary" flat/>
                             </div>
@@ -192,7 +192,8 @@
                       v-model.number="formHrOperationData.salary"
                       label="Зарплата"
                       type="number"
-                      :rules="[(val) => !!val || 'Поле обязательно']"
+                      :rules="[(val) => !!val || 'Поле обязательно',
+                      (val) => val > 0 || 'Зарплата должна быть положительной']"
                   />
                 </div>
                 <div class="col-4">
@@ -210,7 +211,7 @@
                             transition-show="scale"
                             transition-hide="scale"
                         >
-                          <q-date v-model="formHrOperationData.operation_date" mask="YYYY-MM-DD" v-close-popup >
+                          <q-date v-model="formHrOperationData.operation_date" mask="YYYY-MM-DD" v-close-popup>
                             <div class="row items-center justify-end">
                               <q-btn v-close-popup label="Close" color="primary" flat/>
                             </div>
