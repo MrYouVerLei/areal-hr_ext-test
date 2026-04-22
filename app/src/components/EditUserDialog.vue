@@ -1,9 +1,9 @@
 <script setup>
-import {useDialogPluginComponent} from "quasar";
+import {date, useDialogPluginComponent} from "quasar";
 import {onMounted, ref} from "vue";
 
 const props = defineProps({
-  // ...your custom props
+  id: Number,
 });
 
 defineEmits([
@@ -13,16 +13,11 @@ defineEmits([
 ]);
 
 const formData = ref({
-  login: '',
-  password: '',
   last_name: '',
   first_name: '',
   patronymic: ''
 });
 
-const isPwd = ref(true);
-const isConfirmPwd = ref(true);
-const confirmPassword = ref('');
 const role = ref(null);
 const rolesOptions = ref([]);
 
@@ -33,10 +28,32 @@ const {
   onDialogCancel,
 } = useDialogPluginComponent();
 
-async function createUser() {
+async function loadUserData(id) {
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/users`, {
-      method: 'POST',
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/users/${id}`, {credentials: 'include'});
+
+    if (!response.ok) {
+      throw new Error("Ошибка загрузки данных");
+    }
+
+    const data = await response.json();
+
+    formData.value.last_name = data.last_name;
+    formData.value.first_name = data.first_name;
+    formData.value.patronymic = data.patronymic;
+
+    if (rolesOptions.value.length > 0) {
+      role.value = rolesOptions.value.find(item => item.id === data.role_id);
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+async function saveUser(userId) {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/users/${userId}`, {
+      method: 'PATCH',
       headers: {'Content-Type': 'application/json'},
       credentials: 'include',
       body: JSON.stringify({
@@ -47,26 +64,6 @@ async function createUser() {
 
     if (response.ok) {
       onDialogOK();
-    }
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-async function checkUniqueLogin(val) {
-  try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/users/check-unique-login/${val}`);
-
-    if (!response.ok) {
-      throw new Error("Ошибка проверки уникальности логина");
-    }
-
-    const data = await response.json();
-
-    if (data) {
-      return true;
-    } else {
-      return "Логин уже занят"
     }
   } catch (err) {
     console.error(err);
@@ -89,10 +86,6 @@ async function loadRolesData() {
         name: role.name,
       };
     });
-
-    if (rolesOptions.value.length > 0) {
-      role.value = rolesOptions.value[0];
-    }
   } catch (err) {
     console.error(err);
   }
@@ -100,6 +93,7 @@ async function loadRolesData() {
 
 onMounted(() => {
   loadRolesData();
+  loadUserData(props.id);
 });
 </script>
 
@@ -108,9 +102,9 @@ onMounted(() => {
     <q-card style="width: 500px; max-width: 50vw">
       <div class="q-pa-md">
         <q-card-section class="text-center">
-          <h5 class="q-ma-none">Добавление пользователя</h5>
+          <h5 class="q-ma-none">Редактирование пользователя</h5>
         </q-card-section>
-        <q-form @submit="createUser">
+        <q-form @submit="saveUser(props.id)">
           <div class="row q-col-gutter-md">
             <div class="col-12">
               <q-input
@@ -144,50 +138,6 @@ onMounted(() => {
                         class="q-pt-sm"
                         :rules="[(val) => !!val || 'Поле обязательно']"/>
             </div>
-            <div class="col-12">
-              <q-input
-                  outlined
-                  v-model="formData.login"
-                  label="Логин"
-                  :rules="[(val) => !!val || 'Поле обязательно',
-                  (val) => checkUniqueLogin(val)]"
-              />
-            </div>
-            <div class="col-12">
-              <q-input
-                  v-model="formData.password"
-                  outlined
-                  label="Пароль"
-                  :type="isPwd ? 'password' : 'text'"
-                  :rules="[(val) => !!val || 'Поле обязательно']"
-              >
-                <template v-slot:append>
-                  <q-icon
-                      :name="isPwd ? 'visibility_off' : 'visibility'"
-                      class="cursor-pointer"
-                      @click="isPwd = !isPwd"
-                  />
-                </template>
-              </q-input>
-            </div>
-            <div class="col-12">
-              <q-input
-                  v-model="confirmPassword"
-                  outlined
-                  label="Подтвердите пароль"
-                  :type="isConfirmPwd ? 'password' : 'text'"
-                  :rules="[(val) => !!val || 'Поле обязательно',
-                  (val) => val === formData.password || 'Пароли не совпадают']"
-              >
-                <template v-slot:append>
-                  <q-icon
-                      :name="isConfirmPwd ? 'visibility_off' : 'visibility'"
-                      class="cursor-pointer"
-                      @click="isConfirmPwd = !isConfirmPwd"
-                  />
-                </template>
-              </q-input>
-            </div>
           </div>
           <div class="row justify-end q-mt-md">
             <q-btn
@@ -200,7 +150,7 @@ onMounted(() => {
             <q-btn
                 type="submit"
                 color="primary"
-                label="Добавить"
+                label="Сохранить"
             />
           </div>
         </q-form>

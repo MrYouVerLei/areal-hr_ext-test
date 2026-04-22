@@ -3,7 +3,7 @@ import {useDialogPluginComponent} from "quasar";
 import {onMounted, ref} from "vue";
 
 const props = defineProps({
-  userData: Object,
+  id: Number,
 });
 
 defineEmits([
@@ -26,17 +26,12 @@ const {
 
 async function changePassword() {
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/users/${props.userData.id}`, {
-      method: 'PUT',
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/users/${props.id}`, {
+      method: 'PATCH',
       headers: {'Content-Type': 'application/json'},
       credentials: 'include',
       body: JSON.stringify({
-        login: props.userData.login,
-        password: password.value,
-        last_name: props.userData.last_name,
-        first_name: props.userData.first_name,
-        patronymic: props.userData.patronymic,
-        role_id: Number(props.userData.role_id),
+        password: password.value
       })
     });
 

@@ -1,7 +1,8 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { PG_CONNECTION } from '../constants';
-import { UserDto } from './dto/user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import * as argon2 from 'argon2';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -88,7 +89,7 @@ export class UsersService {
     return;
   }
 
-  async create(userDto: UserDto) {
+  async create(userDto: CreateUserDto) {
     await this.validateData(userDto.role_id);
 
     const hash = await argon2.hash(userDto.password);
@@ -111,7 +112,7 @@ export class UsersService {
     return res.rows[0];
   }
 
-  async update(id: number, userDto: UserDto) {
+  async updateAll(id: number, userDto: CreateUserDto) {
     await this.validateData(userDto.role_id);
 
     const hash = await argon2.hash(userDto.password);
@@ -129,6 +130,39 @@ export class UsersService {
         userDto.first_name,
         userDto.patronymic,
         userDto.role_id,
+        id,
+      ],
+    );
+
+    if (res.rowCount === 0) {
+      throw new NotFoundException('Пользователь не найден');
+    }
+
+    return res.rows[0];
+  }
+
+  async update(id: number, userDto: UpdateUserDto) {
+    if (userDto.role_id) {
+      await this.validateData(userDto.role_id);
+    }
+
+    const res = await this.conn.query(
+      `
+        UPDATE users
+        SET password   = COALESCE($1, password),
+            last_name  = COALESCE($2, last_name),
+            first_name = COALESCE($3, first_name),
+            patronymic = COALESCE($4, patronymic),
+            role_id    = COALESCE($5, role_id),
+            updated_at = NOW()
+        WHERE id = $6
+          AND deleted_at IS NULL RETURNING *`,
+      [
+        userDto.password ? await argon2.hash(userDto.password) : null,
+        userDto.last_name || null,
+        userDto.first_name || null,
+        userDto.patronymic ?? null,
+        userDto.role_id || null,
         id,
       ],
     );

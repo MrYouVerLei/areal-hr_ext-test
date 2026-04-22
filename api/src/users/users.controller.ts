@@ -5,16 +5,18 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Put,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { UserDto } from './dto/user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import { Roles } from '../roles/roles.decorator';
 import { Role } from '../roles/role.enum';
 import { CheckAbilities } from '../casl/abilities.decorator';
 import { Action } from '../casl/action.enum';
 import { Public } from '../auth/public.decorator';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -46,12 +48,23 @@ export class UsersController {
 
   @Roles(Role.Admin)
   @Post()
-  create(@Body() userDto: UserDto) {
+  create(@Body() userDto: CreateUserDto) {
     return this.usersService.create(userDto);
   }
 
   @Put(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() userDto: UserDto) {
+  updateAll(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() userDto: CreateUserDto,
+  ) {
+    return this.usersService.updateAll(id, userDto);
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() userDto: UpdateUserDto,
+  ) {
     return this.usersService.update(id, userDto);
   }
 }

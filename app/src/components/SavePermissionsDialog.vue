@@ -18,7 +18,7 @@ const {
   onDialogCancel,
 } = useDialogPluginComponent();
 
-async function loadRolesData(employeeId) {
+async function loadRolesData() {
   try {
     const response = await fetch(`${import.meta.env.VITE_API_URL}/roles`, {credentials: 'include'});
 

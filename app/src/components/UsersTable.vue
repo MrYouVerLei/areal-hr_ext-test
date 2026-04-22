@@ -1,5 +1,9 @@
 <script setup>
 import {onMounted, ref} from "vue";
+import {useQuasar} from "quasar";
+import DeleteUserDialog from "./DeleteUserDialog.vue";
+import EditUserDialog from "./EditUserDialog.vue";
+import ChangePasswordDialog from "./ChangePasswordDialog.vue";
 
 const columns = [
   {
@@ -23,9 +27,14 @@ const columns = [
     align: "center",
     sortable: true,
   },
+  {
+    name: "actions",
+    align: "center",
+  },
 ];
 
 const rows = ref([]);
+const $q = useQuasar();
 
 async function loadUsersData() {
   try {
@@ -50,6 +59,43 @@ async function loadUsersData() {
   }
 }
 
+function openDeleteDialog(userId) {
+  $q.dialog({
+    component: DeleteUserDialog,
+
+    componentProps: {
+      id: userId,
+      persistent: true,
+    },
+  }).onOk(() => {
+    loadUsersData();
+  });
+}
+
+function openEditDialog(userId) {
+  $q.dialog({
+    component: EditUserDialog,
+
+    componentProps: {
+      id: userId,
+      persistent: true,
+    },
+  }).onOk(() => {
+    loadUsersData();
+  });
+}
+
+function openChangePasswordDialog(userId) {
+  $q.dialog({
+    component: ChangePasswordDialog,
+
+    componentProps: {
+      id: userId,
+      persistent: true,
+    },
+  });
+}
+
 onMounted(() => {
   loadUsersData();
 });
@@ -69,7 +115,27 @@ onMounted(() => {
         :virtual-scroll-item-size="48"
         :virtual-scroll-sticky-size-start="48"
         :rows-per-page-options="[0]"
-    />
+    >
+      <template v-slot:body-cell-actions="props">
+        <q-td :props="props">
+          <q-btn flat round icon="more_vert">
+            <q-menu>
+              <q-list dense style="min-width: 100px">
+                <q-item clickable v-close-popup @click="openEditDialog(props.row.id)">
+                  <q-item-section>Редактировать</q-item-section>
+                </q-item>
+                <q-item clickable v-close-popup @click="openChangePasswordDialog(props.row.id)">
+                  <q-item-section>Поменять пароль</q-item-section>
+                </q-item>
+                <q-item clickable v-close-popup @click="openDeleteDialog(props.row.id)">
+                  <q-item-section>Удалить</q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </q-btn>
+        </q-td>
+      </template>
+    </q-table>
   </div>
 </template>
 

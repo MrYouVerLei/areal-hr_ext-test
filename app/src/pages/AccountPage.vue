@@ -5,7 +5,7 @@ import ChangePasswordDialog from "../components/ChangePasswordDialog.vue";
 
 const fullName = ref('');
 const login = ref('');
-const userData = ref(null);
+const userId = ref(null);
 const $q = useQuasar();
 
 function open() {
@@ -13,7 +13,7 @@ function open() {
     component: ChangePasswordDialog,
 
     componentProps: {
-      userData: userData.value,
+      id: userId.value,
       persistent: true,
     },
   });
@@ -26,9 +26,9 @@ async function loadUserData() {
     if (response.ok) {
       const data = await response.json();
       if (data.result) {
-        userData.value = data.user;
-        fullName.value = `${userData.value.last_name} ${userData.value.first_name} ${userData.value.patronymic}`;
-        login.value = userData.value.login;
+        userId.value = data.user.id;
+        fullName.value = `${data.user.last_name} ${data.user.first_name} ${data.user.patronymic}`;
+        login.value = data.user.login;
       }
     }
   } catch (err) {
