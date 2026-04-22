@@ -3,6 +3,7 @@ import UsersTable from "../components/UsersTable.vue";
 import {useQuasar} from "quasar";
 import {ref} from "vue";
 import CreateUserDialog from "../components/CreateUserDialog.vue";
+import SettingPermissions from "../components/SettingPermissions.vue";
 
 // переменная для колхозного обновления дочернего компонета (таблицы)
 const componentKey = ref(0);
@@ -24,6 +25,9 @@ function open() {
 
 <template>
   <div class="q-pa-md q-gutter-md">
+    <div class="q-mx-xl q-px-xl">
+      <SettingPermissions/>
+    </div>
     <div class="q-mx-xl q-px-xl">
       <UsersTable :key="componentKey"/>
     </div>

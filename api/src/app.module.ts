@@ -20,6 +20,7 @@ import { RolesGuard } from './guards/roles.guard';
 import { CaslModule } from './casl/casl.module';
 import { PermissionsModule } from './permissions/permissions.module';
 import { AbilitiesGuard } from './guards/abilities.guard';
+import { RolesModule } from './roles/roles.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { AbilitiesGuard } from './guards/abilities.guard';
     AuthModule,
     CaslModule,
     PermissionsModule,
+    RolesModule,
   ],
   controllers: [AppController],
   providers: [
