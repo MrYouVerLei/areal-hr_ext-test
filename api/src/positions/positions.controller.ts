@@ -14,6 +14,7 @@ import { Roles } from '../roles/roles.decorator';
 import { Role } from '../roles/role.enum';
 import { CheckAbilities } from '../casl/abilities.decorator';
 import { Action } from '../casl/action.enum';
+import { User } from '../users/user.decorator';
 
 @Controller('positions')
 export class PositionsController {
@@ -31,15 +32,15 @@ export class PositionsController {
 
   @Roles(Role.Admin)
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.positionsService.delete(id);
+  remove(@Param('id', ParseIntPipe) id: number, @User() userId: number) {
+    return this.positionsService.delete(id, userId);
   }
 
   @Roles(Role.Admin)
   @CheckAbilities({ action: Action.Create, subject: 'Position' })
   @Post()
-  create(@Body() positionDto: PositionDto) {
-    return this.positionsService.create(positionDto);
+  create(@Body() positionDto: PositionDto, @User() userId: number) {
+    return this.positionsService.create(positionDto, userId);
   }
 
   @Roles(Role.Admin)
@@ -47,7 +48,8 @@ export class PositionsController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() positionDto: PositionDto,
+    @User() userId: number
   ) {
-    return this.positionsService.update(id, positionDto);
+    return this.positionsService.update(id, positionDto, userId);
   }
 }

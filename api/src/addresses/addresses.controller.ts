@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { AddressesService } from './addresses.service';
 import { AddressDto } from './dto/address.dto';
+import { User } from '../users/user.decorator';
 
 @Controller('addresses')
 export class AddressesController {
@@ -26,20 +27,21 @@ export class AddressesController {
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.addressesService.delete(id);
+  remove(@Param('id', ParseIntPipe) id: number, @User() userId: number) {
+    return this.addressesService.delete(id, userId);
   }
 
   @Post()
-  create(@Body() addressDto: AddressDto) {
-    return this.addressesService.create(addressDto);
+  create(@Body() addressDto: AddressDto, @User() userId: number) {
+    return this.addressesService.create(addressDto, userId);
   }
 
   @Put(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() addressDto: AddressDto,
+    @User() userId: number,
   ) {
-    return this.addressesService.update(id, addressDto);
+    return this.addressesService.update(id, addressDto, userId);
   }
 }

@@ -11,7 +11,6 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { LocalAuthGuard } from '../guards/local-auth.guard';
 import { Public } from './public.decorator';
-import { AuthenticatedGuard } from '../guards/authenticated.guard';
 
 @Controller('auth')
 export class AuthController {

@@ -1,6 +1,6 @@
 <script setup>
 import {useDialogPluginComponent} from "quasar";
-import {onMounted, ref} from "vue";
+import {onMounted, ref, watch} from "vue";
 
 const props = defineProps({
   // ...your custom props
@@ -73,9 +73,9 @@ async function loadOrganizationsData() {
   }
 }
 
-async function loadDepartmentsData() {
+async function loadDepartmentsData(organizationId) {
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/departments`, {credentials: 'include'});
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/departments/tree/${organizationId}`, {credentials: 'include'});
 
     if (!response.ok) {
       throw new Error("Ошибка загрузки данных");
@@ -106,7 +106,15 @@ async function loadDepartmentsData() {
 
 onMounted(() => {
   loadOrganizationsData();
-  loadDepartmentsData();
+});
+
+watch(() => formData.value.organization_id, (val) => {
+  if (val) {
+    loadDepartmentsData(formData.value.organization_id.id);
+  } else {
+    departmentsOptions.value = [];
+    formData.value.parent_id = null;
+  }
 });
 </script>
 

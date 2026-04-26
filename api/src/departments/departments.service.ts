@@ -6,10 +6,14 @@ import {
 } from '@nestjs/common';
 import { PG_CONNECTION } from '../constants';
 import { DepartmentDto } from './dto/department.dto';
+import { ChangelogsService } from '../changelogs/changelogs.service';
 
 @Injectable()
 export class DepartmentsService {
-  constructor(@Inject(PG_CONNECTION) private conn: any) {}
+  constructor(
+    @Inject(PG_CONNECTION) private conn: any,
+    private readonly changelogsService: ChangelogsService,
+  ) {}
 
   async findAll() {
     const res = await this.conn.query(`
@@ -60,12 +64,13 @@ export class DepartmentsService {
     return res.rows[0];
   }
 
-  async delete(id: number) {
+  async delete(id: number, userId: number) {
     const res = await this.conn.query(
       `
             UPDATE departments
             SET deleted_at = NOW()
-            WHERE id = $1 AND deleted_at IS NULL`,
+            WHERE id = $1 AND deleted_at IS NULL
+            RETURNING *`,
       [id],
     );
 
@@ -73,10 +78,18 @@ export class DepartmentsService {
       throw new NotFoundException('Отдел не найден');
     }
 
+    await this.changelogsService.create(
+      userId,
+      'Department',
+      'deleted_at',
+      undefined,
+      res.rows[0].deleted_at,
+    );
+
     return;
   }
 
-  async create(departmentDto: DepartmentDto) {
+  async create(departmentDto: DepartmentDto, userId: number) {
     await this.validateData(
       departmentDto.organization_id,
       departmentDto.parent_id,
@@ -95,10 +108,28 @@ export class DepartmentsService {
       ],
     );
 
+    for (const field in res.rows[0]) {
+      if (
+        field === 'created_at' ||
+        field === 'updated_at' ||
+        field === 'deleted_at'
+      ) {
+        continue;
+      }
+
+      await this.changelogsService.create(
+        userId,
+        'Department',
+        field,
+        undefined,
+        res.rows[0][field],
+      );
+    }
+
     return res.rows[0];
   }
 
-  async update(id: number, departmentDto: DepartmentDto) {
+  async update(id: number, departmentDto: DepartmentDto, userId: number) {
     await this.validateData(
       departmentDto.organization_id,
       departmentDto.parent_id,
@@ -109,6 +140,8 @@ export class DepartmentsService {
         'Отдел не может быть родителем самому себе',
       );
     }
+
+    const oldDepartment = await this.findOne(id);
 
     const res = await this.conn.query(
       `
@@ -127,6 +160,25 @@ export class DepartmentsService {
 
     if (res.rowCount === 0) {
       throw new NotFoundException('Отдел не найден');
+    }
+
+    for (const field in res.rows[0]) {
+      if (
+        field === 'created_at' ||
+        field === 'updated_at' ||
+        field === 'deleted_at' ||
+        oldDepartment[field] === res.rows[0][field]
+      ) {
+        continue;
+      }
+
+      await this.changelogsService.create(
+        userId,
+        'Department',
+        field,
+        oldDepartment[field],
+        res.rows[0][field],
+      );
     }
 
     return res.rows[0];

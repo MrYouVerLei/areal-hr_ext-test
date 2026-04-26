@@ -1,10 +1,14 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { PG_CONNECTION } from '../constants';
 import { HrOperationDto } from './dto/hr-operation.dto';
+import { ChangelogsService } from '../changelogs/changelogs.service';
 
 @Injectable()
 export class HrOperationsService {
-  constructor(@Inject(PG_CONNECTION) private conn: any) {}
+  constructor(
+    @Inject(PG_CONNECTION) private conn: any,
+    private readonly changelogsService: ChangelogsService,
+  ) {}
 
   async findAll() {
     const res = await this.conn.query(`
@@ -31,12 +35,13 @@ export class HrOperationsService {
     return res.rows[0];
   }
 
-  async delete(id: number) {
+  async delete(id: number, userId: number) {
     const res = await this.conn.query(
       `
                     UPDATE hr_operations
                     SET deleted_at = NOW()
-                    WHERE id = $1 AND deleted_at IS NULL`,
+                    WHERE id = $1 AND deleted_at IS NULL
+                    RETURNING *`,
       [id],
     );
 
@@ -44,10 +49,18 @@ export class HrOperationsService {
       throw new NotFoundException('Кадровая запись не найдена');
     }
 
+    await this.changelogsService.create(
+      userId,
+      'HrOperation',
+      'deleted_at',
+      undefined,
+      res.rows[0].deleted_at,
+    );
+
     return;
   }
 
-  async create(hrOperationDto: HrOperationDto) {
+  async create(hrOperationDto: HrOperationDto, userId: number) {
     await this.validateData(
       hrOperationDto.employee_id,
       hrOperationDto.position_id,
@@ -69,15 +82,35 @@ export class HrOperationsService {
       ],
     );
 
+    for (const field in res.rows[0]) {
+      if (
+        field === 'created_at' ||
+        field === 'updated_at' ||
+        field === 'deleted_at'
+      ) {
+        continue;
+      }
+
+      await this.changelogsService.create(
+        userId,
+        'HrOperation',
+        field,
+        undefined,
+        res.rows[0][field],
+      );
+    }
+
     return res.rows[0];
   }
 
-  async update(id: number, hrOperationDto: HrOperationDto) {
+  async update(id: number, hrOperationDto: HrOperationDto, userId: number) {
     await this.validateData(
       hrOperationDto.employee_id,
       hrOperationDto.position_id,
       hrOperationDto.department_id,
     );
+
+    const oldHrOperation = await this.findOne(id);
 
     const res = await this.conn.query(
       `
@@ -98,6 +131,25 @@ export class HrOperationsService {
 
     if (res.rowCount === 0) {
       throw new NotFoundException('Кадровая запись не найдена');
+    }
+
+    for (const field in res.rows[0]) {
+      if (
+        field === 'created_at' ||
+        field === 'updated_at' ||
+        field === 'deleted_at' ||
+        oldHrOperation[field] === res.rows[0][field]
+      ) {
+        continue;
+      }
+
+      await this.changelogsService.create(
+        userId,
+        'HrOperation',
+        field,
+        oldHrOperation[field],
+        res.rows[0][field],
+      );
     }
 
     return res.rows[0];

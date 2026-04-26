@@ -3,6 +3,7 @@ import { PG_CONNECTION } from '../constants';
 import { EmployeeDto } from './dto/employee.dto';
 import { AddressesService } from '../addresses/addresses.service';
 import { PassportsService } from '../passports/passports.service';
+import { ChangelogsService } from '../changelogs/changelogs.service';
 
 @Injectable()
 export class EmployeesService {
@@ -10,6 +11,7 @@ export class EmployeesService {
     @Inject(PG_CONNECTION) private conn: any,
     private readonly addressesService: AddressesService,
     private readonly passportsService: PassportsService,
+    private readonly changelogsService: ChangelogsService,
   ) {}
 
   async findAll(name: string = '') {
@@ -119,12 +121,13 @@ export class EmployeesService {
     return res.rows[0];
   }
 
-  async delete(id: number) {
+  async delete(id: number, userId: number) {
     const res = await this.conn.query(
       `
                 UPDATE employees
                 SET deleted_at = NOW()
-                WHERE id = $1 AND deleted_at IS NULL`,
+                WHERE id = $1 AND deleted_at IS NULL
+                RETURNING *`,
       [id],
     );
 
@@ -132,12 +135,20 @@ export class EmployeesService {
       throw new NotFoundException('Сотрудник не найден');
     }
 
+    await this.changelogsService.create(
+      userId,
+      'Employee',
+      'deleted_at',
+      undefined,
+      res.rows[0].deleted_at,
+    );
+
     return;
   }
 
-  async create(employeeDto: EmployeeDto) {
-    const address = await this.addressesService.create(employeeDto.address);
-    const passport = await this.passportsService.create(employeeDto.passport);
+  async create(employeeDto: EmployeeDto, userId: number) {
+    const address = await this.addressesService.create(employeeDto.address, userId);
+    const passport = await this.passportsService.create(employeeDto.passport, userId);
 
     const res = await this.conn.query(
       `
@@ -154,10 +165,28 @@ export class EmployeesService {
       ],
     );
 
+    for (const field in res.rows[0]) {
+      if (
+        field === 'created_at' ||
+        field === 'updated_at' ||
+        field === 'deleted_at'
+      ) {
+        continue;
+      }
+
+      await this.changelogsService.create(
+        userId,
+        'Employee',
+        field,
+        undefined,
+        res.rows[0][field],
+      );
+    }
+
     return res.rows[0];
   }
 
-  async update(id: number, employeeDto: EmployeeDto) {
+  async update(id: number, employeeDto: EmployeeDto, userId: number) {
     const data = await this.conn.query(
       `
             SELECT address_id, passport_id
@@ -173,11 +202,15 @@ export class EmployeesService {
     const address = await this.addressesService.update(
       data.rows[0].address_id,
       employeeDto.address,
+      userId,
     );
     const passport = await this.passportsService.update(
       data.rows[0].passport_id,
       employeeDto.passport,
+      userId,
     );
+
+    const oldEmployee = await this.findOne(id);
 
     const res = await this.conn.query(
       `
@@ -198,6 +231,25 @@ export class EmployeesService {
 
     if (res.rowCount === 0) {
       throw new NotFoundException('Сотрудник не найден');
+    }
+
+    for (const field in res.rows[0]) {
+      if (
+        field === 'created_at' ||
+        field === 'updated_at' ||
+        field === 'deleted_at' ||
+        oldEmployee[field] === res.rows[0][field]
+      ) {
+        continue;
+      }
+
+      await this.changelogsService.create(
+        userId,
+        'Employee',
+        field,
+        oldEmployee[field],
+        res.rows[0][field],
+      );
     }
 
     return res.rows[0];

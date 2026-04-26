@@ -11,8 +11,7 @@ import {
 } from '@nestjs/common';
 import { EmployeesService } from './employees.service';
 import { EmployeeDto } from './dto/employee.dto';
-import { CheckAbilities } from '../casl/abilities.decorator';
-import { Action } from '../casl/action.enum';
+import { User } from '../users/user.decorator';
 
 @Controller('employees')
 export class EmployeesController {
@@ -49,20 +48,21 @@ export class EmployeesController {
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.employeesService.delete(id);
+  remove(@Param('id', ParseIntPipe) id: number, @User() userId: number) {
+    return this.employeesService.delete(id, userId);
   }
 
   @Post()
-  create(@Body() employeeDto: EmployeeDto) {
-    return this.employeesService.create(employeeDto);
+  create(@Body() employeeDto: EmployeeDto, @User() userId: number) {
+    return this.employeesService.create(employeeDto, userId);
   }
 
   @Put(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() employeeDto: EmployeeDto,
+    @User() userId: number,
   ) {
-    return this.employeesService.update(id, employeeDto);
+    return this.employeesService.update(id, employeeDto, userId);
   }
 }

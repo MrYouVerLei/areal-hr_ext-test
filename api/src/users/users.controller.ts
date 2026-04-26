@@ -13,8 +13,6 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Roles } from '../roles/roles.decorator';
 import { Role } from '../roles/role.enum';
-import { CheckAbilities } from '../casl/abilities.decorator';
-import { Action } from '../casl/action.enum';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('users')
