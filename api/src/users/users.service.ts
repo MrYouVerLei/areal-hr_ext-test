@@ -30,7 +30,7 @@ export class UsersService {
                 ON users.role_id = roles.id
                 LEFT JOIN permissions
                 ON roles.id = permissions.role_id
-                WHERE users.id = $1 AND users.deleted_at IS NULL
+                WHERE users.id = $1 AND users.deleted_at IS NULL AND permissions.deleted_at IS NULL
                 GROUP BY users.id, roles.name`,
       [id],
     );
@@ -45,11 +45,20 @@ export class UsersService {
   async findOneByLogin(login: string) {
     const res = await this.conn.query(
       `
-                SELECT users.*, roles.name AS role_name
-                FROM users
-                LEFT JOIN roles
-                ON users.role_id = roles.id
-                WHERE users.login = $1 AND deleted_at IS NULL`,
+        SELECT users.*,
+               roles.name AS role_name,
+               JSON_AGG(
+                 JSON_BUILD_OBJECT('action', permissions.action, 'subject', permissions.subject)
+               ) AS permissions
+        FROM users
+        LEFT JOIN roles
+        ON users.role_id = roles.id
+        LEFT JOIN permissions
+        ON roles.id = permissions.role_id
+        WHERE users.login = $1
+          AND users.deleted_at IS NULL
+          AND permissions.deleted_at IS NULL
+        GROUP BY users.id, roles.name`,
       [login],
     );
 

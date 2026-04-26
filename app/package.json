@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@casl/ability": "^6.8.1",
+    "@casl/vue": "^2.2.6",
     "@quasar/extras": "^1.18.0",
     "pinia": "^3.0.4",
     "quasar": "^2.19.3",

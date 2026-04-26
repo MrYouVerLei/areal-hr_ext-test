@@ -21,6 +21,7 @@ import { CaslModule } from './casl/casl.module';
 import { PermissionsModule } from './permissions/permissions.module';
 import { AbilitiesGuard } from './guards/abilities.guard';
 import { RolesModule } from './roles/roles.module';
+import { MultipleAuthorizeGuard } from './guards/multiple-authorize.guard';
 
 @Module({
   imports: [
@@ -55,8 +56,12 @@ import { RolesModule } from './roles/roles.module';
     },
     {
       provide: 'APP_GUARD',
-      useClass: AbilitiesGuard,
+      useClass: MultipleAuthorizeGuard,
     },
+    // {
+    //   provide: 'APP_GUARD',
+    //   useClass: AbilitiesGuard,
+    // },
     // {
     //   provide: 'APP_GUARD',
     //   useClass: RolesGuard,

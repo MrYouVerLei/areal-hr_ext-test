@@ -11,6 +11,8 @@ import {
 } from '@nestjs/common';
 import { EmployeesService } from './employees.service';
 import { EmployeeDto } from './dto/employee.dto';
+import { CheckAbilities } from '../casl/abilities.decorator';
+import { Action } from '../casl/action.enum';
 
 @Controller('employees')
 export class EmployeesController {

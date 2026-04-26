@@ -15,7 +15,6 @@ import { Roles } from '../roles/roles.decorator';
 import { Role } from '../roles/role.enum';
 import { CheckAbilities } from '../casl/abilities.decorator';
 import { Action } from '../casl/action.enum';
-import { Public } from '../auth/public.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('users')
@@ -23,7 +22,6 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Roles(Role.Admin)
-  @CheckAbilities({ action: Action.Read, subject: 'User' }) // тест
   @Get()
   findAll() {
     return this.usersService.findAll();
@@ -35,6 +33,7 @@ export class UsersController {
     return this.usersService.checkUniqueLogin(login);
   }
 
+  @Roles(Role.Admin)
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.findOne(id);
@@ -52,6 +51,7 @@ export class UsersController {
     return this.usersService.create(userDto);
   }
 
+  @Roles(Role.Admin)
   @Put(':id')
   updateAll(
     @Param('id', ParseIntPipe) id: number,
@@ -60,6 +60,7 @@ export class UsersController {
     return this.usersService.updateAll(id, userDto);
   }
 
+  @Roles(Role.Admin)
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,

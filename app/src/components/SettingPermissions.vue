@@ -1,7 +1,6 @@
 <script setup>
 import {onMounted, ref} from "vue";
 import {useQuasar} from "quasar";
-import StepperCreateEmployee from "./StepperCreateEmployee.vue";
 import SavePermissionsDialog from "./SavePermissionsDialog.vue";
 
 const permissions = ref({
@@ -138,30 +137,6 @@ onMounted(() => {
           <q-item-section avatar>
             <q-toggle
                 v-model="permissions.create_Position"
-                checked-icon="check"
-                unchecked-icon="clear"
-            />
-          </q-item-section>
-        </q-item>
-        <q-item tag="label" v-ripple>
-          <q-item-section>
-            <q-item-label>Создание пользователя</q-item-label>
-          </q-item-section>
-          <q-item-section avatar>
-            <q-toggle
-                v-model="permissions.create_User"
-                checked-icon="check"
-                unchecked-icon="clear"
-            />
-          </q-item-section>
-        </q-item>
-        <q-item tag="label" v-ripple>
-          <q-item-section>
-            <q-item-label>Просмотр списка пользователей</q-item-label>
-          </q-item-section>
-          <q-item-section avatar>
-            <q-toggle
-                v-model="permissions.read_User"
                 checked-icon="check"
                 unchecked-icon="clear"
             />

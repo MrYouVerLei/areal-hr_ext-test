@@ -12,6 +12,8 @@ import { PositionsService } from './positions.service';
 import { PositionDto } from './dto/position.dto';
 import { Roles } from '../roles/roles.decorator';
 import { Role } from '../roles/role.enum';
+import { CheckAbilities } from '../casl/abilities.decorator';
+import { Action } from '../casl/action.enum';
 
 @Controller('positions')
 export class PositionsController {
@@ -34,6 +36,7 @@ export class PositionsController {
   }
 
   @Roles(Role.Admin)
+  @CheckAbilities({ action: Action.Create, subject: 'Position' })
   @Post()
   create(@Body() positionDto: PositionDto) {
     return this.positionsService.create(positionDto);

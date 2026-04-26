@@ -1,5 +1,8 @@
 <script setup>
 import {router} from "../router/routes.js";
+import {useAuthStore} from "../stores/auth.js";
+
+const auth = useAuthStore();
 
 async function logout() {
   try {
@@ -69,7 +72,7 @@ async function logout() {
         </q-item-section>
         <q-item-section class="text-h6 q-py-sm"> Сотрудники</q-item-section>
       </q-item>
-      <q-item clickable v-ripple to="/users">
+      <q-item clickable v-ripple to="/users" v-if="auth.role === 'Администратор'">
         <q-item-section avatar>
           <q-icon name="manage_accounts"/>
         </q-item-section>

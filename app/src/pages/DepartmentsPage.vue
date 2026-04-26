@@ -29,7 +29,7 @@
         </template>
       </q-tree>
     </div>
-    <div class="fixed-bottom-right q-pa-lg">
+    <div class="fixed-bottom-right q-pa-lg" v-if="$can('create', 'Department') || auth.role === 'Администратор'">
       <q-btn round color="primary" icon="add" size="lg" @click="open"/>
     </div>
   </div>
@@ -40,12 +40,14 @@
 import {useQuasar} from "quasar";
 import {onMounted, ref, watch} from "vue";
 import CreateDepartmentDialog from "../components/CreateDepartmentDialog.vue";
+import {useAuthStore} from "../stores/auth.js";
 
 const organization = ref(null);
 const organizationsOptions = ref([]);
 const tree = ref([]);
 const filter = ref('')
 const filterRef = ref(null)
+const auth = useAuthStore();
 const $q = useQuasar();
 
 function open() {

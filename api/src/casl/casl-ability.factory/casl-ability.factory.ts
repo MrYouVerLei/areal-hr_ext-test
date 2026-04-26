@@ -7,7 +7,12 @@ import {
   MongoAbility,
 } from '@casl/ability';
 
-export type Subjects = 'all' | 'User';
+export type Subjects =
+  | 'User'
+  | 'Department'
+  | 'Organization'
+  | 'Position'
+  | 'Employee';
 export type AppAbility = MongoAbility<[Action, Subjects]>;
 
 @Injectable()

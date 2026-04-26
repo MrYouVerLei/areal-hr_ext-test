@@ -1,6 +1,6 @@
 <script setup>
-import {date, useDialogPluginComponent} from "quasar";
-import {onMounted, ref} from "vue";
+import {useDialogPluginComponent} from "quasar";
+import {ref} from "vue";
 
 const props = defineProps({
   id: Number,

@@ -2,6 +2,7 @@
 import {onMounted, ref} from "vue";
 import {router} from "../router/routes.js";
 import {useQuasar} from "quasar";
+import {ability} from "../ability.ts";
 
 const formData = ref({
   login: '',
@@ -21,6 +22,8 @@ async function login() {
     });
 
     if (response.ok) {
+      const data = await response.json();
+      ability.update(data.permissions);
       await router.push("/employees");
     } else {
       $q.notify({
