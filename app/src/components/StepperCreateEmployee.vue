@@ -5,7 +5,7 @@
         <q-card-section class="text-center">
           <h5 class="q-ma-none">Добавление сотрудника</h5>
         </q-card-section>
-        <q-form @submit="createEmployee">
+        <q-form ref="formEmployee">
           <q-stepper v-model="step" ref="stepper" color="primary" animated>
             <q-step :name="1" title="Основные сведения" icon="person">
               <div class="row q-col-gutter-md">
@@ -35,7 +35,8 @@
                       v-model="formEmployeeData.birth_date"
                       label="Дата рождения"
                       mask="####-##-##"
-                      :rules="[(val) => !!val || 'Поле обязательно']"
+                      :rules="[(val) => !!val || 'Поле обязательно',
+                      (val) => val.length === 10 || 'Введите полную дату']"
                   >
                     <template v-slot:append>
                       <q-icon name="event" class="cursor-pointer">
@@ -102,7 +103,9 @@
                       outlined
                       v-model="formPassportData.series"
                       label="Серия"
-                      :rules="[(val) => !!val || 'Поле обязательно']"
+                      mask="####"
+                      :rules="[(val) => !!val || 'Поле обязательно',
+                      (val) => val.length === 4 || 'Введите 4 цифры']"
                   />
                 </div>
                 <div class="col-3">
@@ -110,7 +113,9 @@
                       outlined
                       v-model="formPassportData.number"
                       label="Номер"
-                      :rules="[(val) => !!val || 'Поле обязательно']"
+                      mask="######"
+                      :rules="[(val) => !!val || 'Поле обязательно',
+                      (val) => val.length === 6 || 'Введите 6 цифр']"
                   />
                 </div>
                 <div class="col-3">
@@ -118,7 +123,9 @@
                       outlined
                       v-model="formPassportData.subdivision_code"
                       label="Код подразделения"
-                      :rules="[(val) => !!val || 'Поле обязательно']"
+                      mask="###-###"
+                      :rules="[(val) => !!val || 'Поле обязательно',
+                      (val) => val.length === 7 || 'Введите 6 цифр']"
                   />
                 </div>
                 <div class="col-4">
@@ -166,7 +173,7 @@
                     multiple
                     style="max-width: 300px"
                     hint="Допустимые форматы: JPG, PNG, PDF"
-                    accept=".jpg .jpeg .png .pdf"
+                    accept=".jpg,.jpeg,.png,.pdf"
                 >
                   <template v-slot:prepend>
                     <q-icon name="attach_file"/>
@@ -202,7 +209,8 @@
                       v-model="formHrOperationData.operation_date"
                       label="Дата приёма"
                       mask="####-##-##"
-                      :rules="[(val) => !!val || 'Поле обязательно']"
+                      :rules="[(val) => !!val || 'Поле обязательно',
+                      (val) => val.length === 10 || 'Введите полную дату']"
                   >
                     <template v-slot:append>
                       <q-icon name="event" class="cursor-pointer">
@@ -242,9 +250,8 @@
                     class="q-mr-sm"
                 />
                 <q-btn
-                    @click="step === 4 ? null : $refs.stepper.next()"
+                    @click="validate()"
                     color="primary"
-                    :type="step === 4 ? 'submit' : 'button'"
                     :label="step === 4 ? 'Завершить' : 'Далее'"
                 />
               </q-stepper-navigation>
@@ -273,10 +280,10 @@ defineEmits([
 const formAddressData = ref({
   region: '',
   locality: '',
-  street: '',
+  street: null,
   house: '',
-  corps: '',
-  apartment: ''
+  corps: null,
+  apartment: null
 });
 
 const formPassportData = ref({
@@ -290,7 +297,7 @@ const formPassportData = ref({
 const formEmployeeData = ref({
   last_name: '',
   first_name: '',
-  patronymic: '',
+  patronymic: null,
   birth_date: null
 });
 
@@ -307,6 +314,7 @@ const departmentsOptions = ref([]);
 const positionsOptions = ref([]);
 const step = ref(1);
 const stepper = ref(null);
+const formEmployee = ref(null);
 
 const {
   dialogRef,
@@ -314,6 +322,24 @@ const {
   onDialogOK,
   onDialogCancel,
 } = useDialogPluginComponent();
+
+async function validate() {
+  const res = await formEmployee.value.validate();
+
+  if (step.value === 1 || step.value === 2) {
+    if (res) {
+      stepper.value.next();
+    }
+  } else if (step.value === 3) {
+    if (res && files.value.length > 0) {
+      stepper.value.next();
+    }
+  } else {
+    if (res && department.value && position.value) {
+      await createEmployee();
+    }
+  }
+}
 
 async function loadDepartmentsData() {
   try {

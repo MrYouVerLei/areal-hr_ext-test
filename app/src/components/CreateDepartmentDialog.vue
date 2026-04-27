@@ -14,7 +14,7 @@ defineEmits([
 
 const formData = ref({
   name: '',
-  comment: '',
+  comment: null,
   organization_id: null,
   parent_id: null
 });

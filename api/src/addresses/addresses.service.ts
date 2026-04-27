@@ -80,7 +80,8 @@ export class AddressesService {
       if (
         field === 'created_at' ||
         field === 'updated_at' ||
-        field === 'deleted_at'
+        field === 'deleted_at' ||
+        res.rows[0][field] === null
       ) {
         continue;
       }
