@@ -22,3 +22,37 @@ services:
       /usr/bin/mc mb dockerminio/${MINIO_BUCKET};
       exit 0;
       "
+  postgres:
+    image: postgres:18
+    container_name: postgres_container
+    environment:
+      POSTGRES_USER: ${PGUSER}
+      POSTGRES_PASSWORD: ${PGPASSWORD}
+      POSTGRES_DB: ${PGDATABASE}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+
+  api:
+    container_name: api
+    build:
+      context: ./api
+      dockerfile: ../containers/api/Dockerfile
+    env_file: .env
+    depends_on:
+      - minio
+      - postgres
+    ports:
+      - "3000:3000"
+
+  app:
+    container_name: app
+    build:
+      context: ./app
+      dockerfile: ../containers/app/Dockerfile
+    env_file: .env
+    depends_on:
+      - api
+    ports:
+      - "5173:5173"
