@@ -1,7 +1,7 @@
 <script setup>
 import {useQuasar} from "quasar";
 import {onMounted, ref} from "vue";
-import ChangePasswordDialog from "../components/ChangePasswordDialog.vue";
+import ChangePasswordDialog from "../components/user/ChangePasswordDialog.vue";
 
 const fullName = ref('');
 const login = ref('');

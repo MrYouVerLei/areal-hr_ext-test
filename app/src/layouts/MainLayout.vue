@@ -21,7 +21,7 @@ async function logout() {
 </script>
 
 <template>
-  <q-layout view="lHh lpR fFf">
+  <q-layout view="lHh LpR fFf">
     <q-header elevated class="bg-primary text-white">
       <q-toolbar>
         <q-toolbar-title>
@@ -71,6 +71,12 @@ async function logout() {
           <q-icon name="people"/>
         </q-item-section>
         <q-item-section class="text-h6 q-py-sm"> Сотрудники</q-item-section>
+      </q-item>
+      <q-item clickable v-ripple to="/changelogs" v-if="$can('read', 'Changelog') || auth.role === 'Администратор'">
+        <q-item-section avatar>
+          <q-icon name="history"/>
+        </q-item-section>
+        <q-item-section class="text-h6 q-py-sm"> История изменений</q-item-section>
       </q-item>
       <q-item clickable v-ripple to="/users" v-if="auth.role === 'Администратор'">
         <q-item-section avatar>

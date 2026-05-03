@@ -2,12 +2,14 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { PG_CONNECTION } from '../constants';
 import { HrOperationDto } from './dto/hr-operation.dto';
 import { ChangelogsService } from '../changelogs/changelogs.service';
+import { EmployeesService } from '../employees/employees.service';
 
 @Injectable()
 export class HrOperationsService {
   constructor(
     @Inject(PG_CONNECTION) private conn: any,
     private readonly changelogsService: ChangelogsService,
+    private readonly employeesService: EmployeesService,
   ) {}
 
   async findAll() {
@@ -56,6 +58,102 @@ export class HrOperationsService {
       undefined,
       res.rows[0].deleted_at,
     );
+
+    return;
+  }
+
+  async deleteAllRowsWithPosition(
+    positionId: number,
+    userId: number,
+    date: string,
+  ) {
+    // const res = await this.conn.query(
+    //   `
+    //                 UPDATE hr_operations
+    //                 SET deleted_at = NOW()
+    //                 WHERE position_id = $1 AND deleted_at IS NULL
+    //                 RETURNING *`,
+    //   [positionId],
+    // );
+
+    const res = await this.conn.query(
+      `
+        SELECT DISTINCT
+        ON (employee_id) salary, operation_type, operation_date, employee_id, position_id, department_id
+        FROM hr_operations
+        WHERE position_id = $1 AND deleted_at IS NULL
+        ORDER BY employee_id, operation_date DESC `,
+      [positionId],
+    );
+
+    for (const item of res.rows) {
+      const dto: HrOperationDto = {
+        salary: Number(item.salary),
+        operation_type: 'Увольнение',
+        operation_date: date,
+        employee_id: Number(item.employee_id),
+        position_id: Number(item.position_id),
+        department_id: Number(item.department_id),
+      };
+
+      await this.create(dto, userId);
+      await this.employeesService.delete(Number(item.employee_id), userId);
+      // await this.changelogsService.create(
+      //   userId,
+      //   'HrOperation',
+      //   'deleted_at',
+      //   undefined,
+      //   item.deleted_at,
+      // );
+    }
+
+    return;
+  }
+
+  async deleteAllRowsWithDepartment(
+    departmentId: number,
+    userId: number,
+    date: string,
+  ) {
+    // const res = await this.conn.query(
+    //   `
+    //                 UPDATE hr_operations
+    //                 SET deleted_at = NOW()
+    //                 WHERE department_id = $1 AND deleted_at IS NULL
+    //                 RETURNING *`,
+    //   [departmentId],
+    // );
+
+    const res = await this.conn.query(
+      `
+        SELECT DISTINCT
+        ON (employee_id) salary, operation_type, operation_date, employee_id, position_id, department_id
+        FROM hr_operations
+        WHERE department_id = $1 AND deleted_at IS NULL
+        ORDER BY employee_id, operation_date DESC `,
+      [departmentId],
+    );
+
+    for (const item of res.rows) {
+      const dto: HrOperationDto = {
+        salary: Number(item.salary),
+        operation_type: 'Увольнение',
+        operation_date: date,
+        employee_id: Number(item.employee_id),
+        position_id: Number(item.position_id),
+        department_id: Number(item.department_id),
+      };
+
+      await this.create(dto, userId);
+      await this.employeesService.delete(Number(item.employee_id), userId);
+      // await this.changelogsService.create(
+      //   userId,
+      //   'HrOperation',
+      //   'deleted_at',
+      //   undefined,
+      //   item.deleted_at,
+      // );
+    }
 
     return;
   }

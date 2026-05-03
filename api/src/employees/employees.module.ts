@@ -8,5 +8,6 @@ import { PassportsModule } from '../passports/passports.module';
   imports: [AddressesModule, PassportsModule],
   controllers: [EmployeesController],
   providers: [EmployeesService],
+  exports: [EmployeesService],
 })
 export class EmployeesModule {}

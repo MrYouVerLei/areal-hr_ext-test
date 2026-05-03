@@ -22,6 +22,22 @@
           v-if="tree.length > 0"
           :filter="filter"
       >
+        <template v-slot:default-header="prop">
+          <div class="row items-center justify-between full-width">
+            <div class="row">
+              <q-icon v-if="prop.node.icon" :name="prop.node.icon" class="q-mr-sm"/>
+              <div>
+                {{ prop.node.label }}
+              </div>
+            </div>
+            <div v-if="!prop.node.id.toString().startsWith('id-') && prop.node.id !== 'root'" class="q-gutter-xs">
+              <q-btn flat round color="primary" size="sm" icon="edit" @click.stop="openEditDialog(prop.node.id)"
+                     v-if="$can('update', 'Department') || auth.role === 'Администратор'"/>
+              <q-btn flat round color="primary" size="sm" icon="delete" @click.stop="openDeleteDialog(prop.node.id)"
+                     v-if="$can('delete', 'Department') || auth.role === 'Администратор'"/>
+            </div>
+          </div>
+        </template>
         <template v-slot:default-body="prop">
           <div v-if="prop.node.comment">
             {{ prop.node.comment }}
@@ -39,8 +55,10 @@
 <script setup>
 import {useQuasar} from "quasar";
 import {onMounted, ref, watch} from "vue";
-import CreateDepartmentDialog from "../components/CreateDepartmentDialog.vue";
+import CreateDepartmentDialog from "../components/department/CreateDepartmentDialog.vue";
 import {useAuthStore} from "../stores/auth.js";
+import EditDepartmentDialog from "../components/department/EditDepartmentDialog.vue";
+import DeleteDepartmentDialog from "../components/department/DeleteDepartmentDialog.vue";
 
 const organization = ref(null);
 const organizationsOptions = ref([]);
@@ -56,6 +74,32 @@ function open() {
 
     componentProps: {
       text: "something",
+      persistent: true,
+    },
+  }).onOk(() => {
+    updateTree();
+  });
+}
+
+function openEditDialog(departmentId) {
+  $q.dialog({
+    component: EditDepartmentDialog,
+
+    componentProps: {
+      id: departmentId,
+      persistent: true,
+    },
+  }).onOk(() => {
+    updateTree();
+  });
+}
+
+function openDeleteDialog(departmentId) {
+  $q.dialog({
+    component: DeleteDepartmentDialog,
+
+    componentProps: {
+      id: departmentId,
       persistent: true,
     },
   }).onOk(() => {

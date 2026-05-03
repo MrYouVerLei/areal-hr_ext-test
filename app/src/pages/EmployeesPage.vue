@@ -1,8 +1,8 @@
 <script setup>
-import EmployeesFilters from "../components/EmployeesFilters.vue";
-import EmployeesTable from "../components/EmployeesTable.vue";
+import EmployeesFilters from "../components/employee/EmployeesFilters.vue";
+import EmployeesTable from "../components/employee/EmployeesTable.vue";
 import { useQuasar } from "quasar";
-import StepperCreateEmployee from "../components/StepperCreateEmployee.vue";
+import CreateEmployeeStepper from "../components/employee/CreateEmployeeStepper.vue";
 import {ref} from "vue";
 
 const componentKey = ref(0);
@@ -10,7 +10,7 @@ const $q = useQuasar();
 
 function open() {
   $q.dialog({
-    component: StepperCreateEmployee,
+    component: CreateEmployeeStepper,
 
     componentProps: {
       text: "something",

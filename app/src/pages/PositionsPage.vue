@@ -13,8 +13,8 @@
 <script setup>
 import {useQuasar} from "quasar";
 import {ref} from "vue";
-import PositionsTable from "../components/PositionsTable.vue";
-import CreatePositionDialog from "../components/CreatePositionDialog.vue";
+import PositionsTable from "../components/position/PositionsTable.vue";
+import CreatePositionDialog from "../components/position/CreatePositionDialog.vue";
 import {useAuthStore} from "../stores/auth.js";
 
 // переменная для колхозного обновления дочернего компонета (таблицы)

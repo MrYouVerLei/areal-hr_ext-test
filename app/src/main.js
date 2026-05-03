@@ -7,6 +7,7 @@ import {router} from './router/routes'
 import {createPinia} from "pinia";
 import {abilitiesPlugin} from "@casl/vue";
 import {ability} from './ability';
+import langRu from 'quasar/lang/ru'
 
 const pinia = createPinia()
 const myApp = createApp(App)
@@ -16,6 +17,7 @@ myApp.use(Quasar, {
         Dialog,
         Notify
     },
+    lang: langRu
 })
 
 myApp.use(router)

@@ -11,9 +11,9 @@
 </template>
 
 <script setup>
-import OrganizationsTable from "../components/OrganizationsTable.vue";
+import OrganizationsTable from "../components/organization/OrganizationsTable.vue";
 import {useQuasar} from "quasar";
-import CreateOrganizationDialog from "../components/CreateOrganizationDialog.vue";
+import CreateOrganizationDialog from "../components/organization/CreateOrganizationDialog.vue";
 import {ref} from "vue";
 import {useAuthStore} from "../stores/auth.js";
 

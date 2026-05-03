@@ -9,6 +9,7 @@ import LoginLayout from "../layouts/LoginLayout.vue";
 import PositionsPage from "../pages/PositionsPage.vue";
 import AccountPage from "../pages/AccountPage.vue";
 import {useAuthStore} from "../stores/auth.js";
+import ChangelogPage from "../pages/ChangelogPage.vue";
 
 const routes = [
     {
@@ -27,6 +28,7 @@ const routes = [
             {path: 'positions', component: PositionsPage, meta: {requiresAuth: true}},
             {path: 'users', component: UsersPage, meta: {requiresAuth: true, roles: ['Администратор']}},
             {path: 'account', component: AccountPage, meta: {requiresAuth: true}},
+            {path: 'changelogs', component: ChangelogPage, meta: {requiresAuth: true}},
         ]
     },
 ]

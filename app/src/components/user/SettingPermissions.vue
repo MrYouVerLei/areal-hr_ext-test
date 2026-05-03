@@ -7,8 +7,13 @@ const permissions = ref({
   create_Organization: false,
   create_Department: false,
   create_Position: false,
-  create_User: false,
-  read_User: false,
+  read_Changelog: false,
+  delete_Organization: false,
+  delete_Department: false,
+  delete_Position: false,
+  update_Organization: false,
+  update_Department: false,
+  update_Position: false,
 });
 const loadPermissions = ref(null);
 const roleId = ref(null);
@@ -108,6 +113,19 @@ onMounted(() => {
       <q-list>
         <q-item tag="label" v-ripple>
           <q-item-section>
+            <q-item-label>Просмотр истории изменений</q-item-label>
+          </q-item-section>
+          <q-item-section avatar>
+            <q-toggle
+                v-model="permissions.read_Changelog"
+                checked-icon="check"
+                unchecked-icon="clear"
+            />
+          </q-item-section>
+        </q-item>
+        <q-separator/>
+        <q-item tag="label" v-ripple>
+          <q-item-section>
             <q-item-label>Создание организации</q-item-label>
           </q-item-section>
           <q-item-section avatar>
@@ -118,6 +136,31 @@ onMounted(() => {
             />
           </q-item-section>
         </q-item>
+        <q-item tag="label" v-ripple>
+          <q-item-section>
+            <q-item-label>Редактирование организации</q-item-label>
+          </q-item-section>
+          <q-item-section avatar>
+            <q-toggle
+                v-model="permissions.update_Organization"
+                checked-icon="check"
+                unchecked-icon="clear"
+            />
+          </q-item-section>
+        </q-item>
+        <q-item tag="label" v-ripple>
+          <q-item-section>
+            <q-item-label>Удаление организации</q-item-label>
+          </q-item-section>
+          <q-item-section avatar>
+            <q-toggle
+                v-model="permissions.delete_Organization"
+                checked-icon="check"
+                unchecked-icon="clear"
+            />
+          </q-item-section>
+        </q-item>
+        <q-separator/>
         <q-item tag="label" v-ripple>
           <q-item-section>
             <q-item-label>Создание отдела</q-item-label>
@@ -132,11 +175,60 @@ onMounted(() => {
         </q-item>
         <q-item tag="label" v-ripple>
           <q-item-section>
+            <q-item-label>Редактирование отдела</q-item-label>
+          </q-item-section>
+          <q-item-section avatar>
+            <q-toggle
+                v-model="permissions.update_Department"
+                checked-icon="check"
+                unchecked-icon="clear"
+            />
+          </q-item-section>
+        </q-item>
+        <q-item tag="label" v-ripple>
+          <q-item-section>
+            <q-item-label>Удаление отдела</q-item-label>
+          </q-item-section>
+          <q-item-section avatar>
+            <q-toggle
+                v-model="permissions.delete_Department"
+                checked-icon="check"
+                unchecked-icon="clear"
+            />
+          </q-item-section>
+        </q-item>
+        <q-separator/>
+        <q-item tag="label" v-ripple>
+          <q-item-section>
             <q-item-label>Создание должности</q-item-label>
           </q-item-section>
           <q-item-section avatar>
             <q-toggle
                 v-model="permissions.create_Position"
+                checked-icon="check"
+                unchecked-icon="clear"
+            />
+          </q-item-section>
+        </q-item>
+        <q-item tag="label" v-ripple>
+          <q-item-section>
+            <q-item-label>Редактирование должности</q-item-label>
+          </q-item-section>
+          <q-item-section avatar>
+            <q-toggle
+                v-model="permissions.update_Position"
+                checked-icon="check"
+                unchecked-icon="clear"
+            />
+          </q-item-section>
+        </q-item>
+        <q-item tag="label" v-ripple>
+          <q-item-section>
+            <q-item-label>Удаление должности</q-item-label>
+          </q-item-section>
+          <q-item-section avatar>
+            <q-toggle
+                v-model="permissions.delete_Position"
                 checked-icon="check"
                 unchecked-icon="clear"
             />

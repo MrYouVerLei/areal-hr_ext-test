@@ -1,9 +1,9 @@
 <script setup>
-import UsersTable from "../components/UsersTable.vue";
+import UsersTable from "../components/user/UsersTable.vue";
 import {useQuasar} from "quasar";
 import {ref} from "vue";
-import CreateUserDialog from "../components/CreateUserDialog.vue";
-import SettingPermissions from "../components/SettingPermissions.vue";
+import CreateUserDialog from "../components/user/CreateUserDialog.vue";
+import SettingPermissions from "../components/user/SettingPermissions.vue";
 
 // переменная для колхозного обновления дочернего компонета (таблицы)
 const componentKey = ref(0);

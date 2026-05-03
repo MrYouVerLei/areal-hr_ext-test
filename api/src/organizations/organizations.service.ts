@@ -2,12 +2,14 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { PG_CONNECTION } from '../constants';
 import { OrganizationDto } from './dto/organization.dto';
 import { ChangelogsService } from '../changelogs/changelogs.service';
+import { DepartmentsService } from '../departments/departments.service';
 
 @Injectable()
 export class OrganizationsService {
   constructor(
     @Inject(PG_CONNECTION) private conn: any,
     private readonly changelogsService: ChangelogsService,
+    private readonly departmentsService: DepartmentsService,
   ) {}
 
   async findAll() {
@@ -36,7 +38,7 @@ export class OrganizationsService {
     return res.rows[0];
   }
 
-  async delete(id: number, userId: number) {
+  async delete(id: number, userId: number, date?: string) {
     const res = await this.conn.query(
       `
             UPDATE organizations
@@ -49,6 +51,12 @@ export class OrganizationsService {
     if (res.rowCount === 0) {
       throw new NotFoundException('Организация не найдена');
     }
+
+    await this.departmentsService.deleteAllInOrganization(
+      id,
+      userId,
+      date || Date.now().toLocaleString(),
+    );
 
     await this.changelogsService.create(
       userId,

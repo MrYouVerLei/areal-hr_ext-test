@@ -7,6 +7,7 @@ import {
   Param,
   Body,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { DepartmentsService } from './departments.service';
 import { DepartmentDto } from './dto/department.dto';
@@ -36,9 +37,14 @@ export class DepartmentsController {
   }
 
   @Roles(Role.Admin)
+  @CheckAbilities({ action: Action.Delete, subject: 'Department' })
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number, @User() userId: number) {
-    return this.departmentsService.delete(id, userId);
+  remove(
+    @Param('id', ParseIntPipe) id: number,
+    @User() userId: number,
+    @Query('date') date?: string,
+  ) {
+    return this.departmentsService.delete(id, userId, date);
   }
 
   @Roles(Role.Admin)
@@ -49,6 +55,7 @@ export class DepartmentsController {
   }
 
   @Roles(Role.Admin)
+  @CheckAbilities({ action: Action.Update, subject: 'Department' })
   @Put(':id')
   update(
     @Param('id', ParseIntPipe) id: number,

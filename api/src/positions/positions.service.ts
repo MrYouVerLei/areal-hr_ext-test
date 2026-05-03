@@ -2,12 +2,14 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { PG_CONNECTION } from '../constants';
 import { PositionDto } from './dto/position.dto';
 import { ChangelogsService } from '../changelogs/changelogs.service';
+import { HrOperationsService } from '../hr-operations/hr-operations.service';
 
 @Injectable()
 export class PositionsService {
   constructor(
     @Inject(PG_CONNECTION) private conn: any,
     private readonly changelogsService: ChangelogsService,
+    private readonly hrOperationService: HrOperationsService,
   ) {}
 
   async findAll() {
@@ -36,7 +38,7 @@ export class PositionsService {
     return res.rows[0];
   }
 
-  async delete(id: number, userId: number) {
+  async delete(id: number, userId: number, date?: string) {
     const res = await this.conn.query(
       `
             UPDATE positions
@@ -49,6 +51,12 @@ export class PositionsService {
     if (res.rowCount === 0) {
       throw new NotFoundException('Должность не найдена');
     }
+
+    await this.hrOperationService.deleteAllRowsWithPosition(
+      Number(res.rows[0].id),
+      userId,
+      date || Date.now().toLocaleString(),
+    );
 
     await this.changelogsService.create(
       userId,

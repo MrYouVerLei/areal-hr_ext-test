@@ -7,12 +7,14 @@ import {
 import { PG_CONNECTION } from '../constants';
 import { DepartmentDto } from './dto/department.dto';
 import { ChangelogsService } from '../changelogs/changelogs.service';
+import { HrOperationsService } from '../hr-operations/hr-operations.service';
 
 @Injectable()
 export class DepartmentsService {
   constructor(
     @Inject(PG_CONNECTION) private conn: any,
     private readonly changelogsService: ChangelogsService,
+    private readonly hrOperationsService: HrOperationsService,
   ) {}
 
   async findAll() {
@@ -34,13 +36,16 @@ export class DepartmentsService {
                                FROM departments
                                WHERE parent_id IS NULL
                                  AND organization_id = $1
+                                 AND deleted_at IS NULL
                                UNION ALL
                                SELECT c.id, c.name, c.comment, c.parent_id
                                FROM dep p,
                                     departments c
-                               WHERE c.parent_id = p.id)
+                               WHERE c.parent_id = p.id
+                                 AND c.deleted_at IS NULL)
         SELECT *
-        FROM dep;`,
+        FROM dep
+        ORDER BY name`,
       [organizationId],
     );
 
@@ -64,13 +69,24 @@ export class DepartmentsService {
     return res.rows[0];
   }
 
-  async delete(id: number, userId: number) {
+  async delete(id: number, userId: number, date?: string) {
     const res = await this.conn.query(
       `
-            UPDATE departments
-            SET deleted_at = NOW()
-            WHERE id = $1 AND deleted_at IS NULL
-            RETURNING *`,
+        WITH RECURSIVE dep AS (SELECT id, parent_id
+                               FROM departments
+                               WHERE parent_id = $1
+                                 AND deleted_at IS NULL
+                               UNION ALL
+                               SELECT c.id, c.parent_id
+                               FROM dep p,
+                                    departments c
+                               WHERE c.parent_id = p.id
+                                 AND c.deleted_at IS NULL)
+        UPDATE departments
+        SET deleted_at = NOW()
+        WHERE id IN (SELECT id FROM dep)
+          AND deleted_at IS NULL
+        RETURNING *`,
       [id],
     );
 
@@ -78,13 +94,54 @@ export class DepartmentsService {
       throw new NotFoundException('Отдел не найден');
     }
 
-    await this.changelogsService.create(
-      userId,
-      'Department',
-      'deleted_at',
-      undefined,
-      res.rows[0].deleted_at,
+    for (const item of res.rows) {
+      await this.hrOperationsService.deleteAllRowsWithDepartment(
+        Number(item.id),
+        userId,
+        date || Date.now().toLocaleString(),
+      );
+
+      await this.changelogsService.create(
+        userId,
+        'Department',
+        'deleted_at',
+        undefined,
+        item.deleted_at,
+      );
+    }
+
+    return;
+  }
+
+  async deleteAllInOrganization(
+    organizationId: number,
+    userId: number,
+    date: string,
+  ) {
+    const res = await this.conn.query(
+      `
+            UPDATE departments
+            SET deleted_at = NOW()
+            WHERE organization_id = $1 AND deleted_at IS NULL
+            RETURNING *`,
+      [organizationId],
     );
+
+    for (const item of res.rows) {
+      await this.hrOperationsService.deleteAllRowsWithDepartment(
+        Number(item.id),
+        userId,
+        date,
+      );
+
+      await this.changelogsService.create(
+        userId,
+        'Department',
+        'deleted_at',
+        undefined,
+        item.deleted_at,
+      );
+    }
 
     return;
   }

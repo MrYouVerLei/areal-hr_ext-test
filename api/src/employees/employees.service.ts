@@ -122,6 +122,24 @@ export class EmployeesService {
   }
 
   async delete(id: number, userId: number) {
+    const data = await this.conn.query(
+      `
+        SELECT address_id, passport_id
+        FROM employees
+        WHERE id = $1`,
+      [id],
+    );
+
+    if (data.rowCount === 0) {
+      throw new NotFoundException('Сотрудник не найден');
+    }
+
+    await this.addressesService.delete(Number(data.rows[0].address_id), userId);
+    await this.passportsService.delete(
+      Number(data.rows[0].passport_id),
+      userId,
+    );
+
     const res = await this.conn.query(
       `
                 UPDATE employees
@@ -130,10 +148,6 @@ export class EmployeesService {
                 RETURNING *`,
       [id],
     );
-
-    if (res.rowCount === 0) {
-      throw new NotFoundException('Сотрудник не найден');
-    }
 
     await this.changelogsService.create(
       userId,
@@ -147,8 +161,14 @@ export class EmployeesService {
   }
 
   async create(employeeDto: EmployeeDto, userId: number) {
-    const address = await this.addressesService.create(employeeDto.address, userId);
-    const passport = await this.passportsService.create(employeeDto.passport, userId);
+    const address = await this.addressesService.create(
+      employeeDto.address,
+      userId,
+    );
+    const passport = await this.passportsService.create(
+      employeeDto.passport,
+      userId,
+    );
 
     const res = await this.conn.query(
       `

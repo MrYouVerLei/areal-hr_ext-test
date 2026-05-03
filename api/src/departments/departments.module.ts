@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
 import { DepartmentsService } from './departments.service';
 import { DepartmentsController } from './departments.controller';
+import { HrOperationsModule } from '../hr-operations/hr-operations.module';
 
 @Module({
+  imports: [HrOperationsModule],
   controllers: [DepartmentsController],
   providers: [DepartmentsService],
+  exports: [DepartmentsService],
 })
 export class DepartmentsModule {}

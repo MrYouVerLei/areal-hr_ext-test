@@ -1,6 +1,6 @@
 <script setup>
 import {onMounted, ref} from "vue";
-import {useEmployeesFilterStore} from "../stores/employees.js";
+import {useEmployeesFilterStore} from "../../stores/employees.js";
 import {useQuasar} from "quasar";
 import InfoEmployeeDialog from "./InfoEmployeeDialog.vue";
 import DeleteEmployeeDialog from "./DeleteEmployeeDialog.vue";

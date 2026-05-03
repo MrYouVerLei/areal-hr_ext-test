@@ -12,7 +12,8 @@ export type Subjects =
   | 'Department'
   | 'Organization'
   | 'Position'
-  | 'Employee';
+  | 'Employee'
+  | 'Changelog';
 export type AppAbility = MongoAbility<[Action, Subjects]>;
 
 @Injectable()

@@ -7,6 +7,7 @@ import {
   Param,
   Body,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { PositionsService } from './positions.service';
 import { PositionDto } from './dto/position.dto';
@@ -31,9 +32,14 @@ export class PositionsController {
   }
 
   @Roles(Role.Admin)
+  @CheckAbilities({ action: Action.Delete, subject: 'Position' })
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number, @User() userId: number) {
-    return this.positionsService.delete(id, userId);
+  remove(
+    @Param('id', ParseIntPipe) id: number,
+    @User() userId: number,
+    @Query('date') date?: string,
+  ) {
+    return this.positionsService.delete(id, userId, date);
   }
 
   @Roles(Role.Admin)
@@ -44,11 +50,12 @@ export class PositionsController {
   }
 
   @Roles(Role.Admin)
+  @CheckAbilities({ action: Action.Update, subject: 'Position' })
   @Put(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() positionDto: PositionDto,
-    @User() userId: number
+    @User() userId: number,
   ) {
     return this.positionsService.update(id, positionDto, userId);
   }

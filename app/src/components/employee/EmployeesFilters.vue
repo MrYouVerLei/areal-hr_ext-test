@@ -52,7 +52,7 @@
 
 <script setup>
 import {onMounted, onUnmounted, ref} from "vue";
-import {useEmployeesFilterStore} from "../stores/employees.js";
+import {useEmployeesFilterStore} from "../../stores/employees.js";
 
 const filter = useEmployeesFilterStore();
 const search = ref("");
