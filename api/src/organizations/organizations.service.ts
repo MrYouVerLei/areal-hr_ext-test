@@ -55,7 +55,7 @@ export class OrganizationsService {
     await this.departmentsService.deleteAllInOrganization(
       id,
       userId,
-      date || Date.now().toLocaleString(),
+      date || new Date().toLocaleDateString('en-ZA'),
     );
 
     await this.changelogsService.create(

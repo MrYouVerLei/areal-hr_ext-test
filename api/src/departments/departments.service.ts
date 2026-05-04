@@ -98,7 +98,7 @@ export class DepartmentsService {
       await this.hrOperationsService.deleteAllRowsWithDepartment(
         Number(item.id),
         userId,
-        date || Date.now().toLocaleString(),
+        date || new Date().toLocaleDateString('en-ZA'),
       );
 
       await this.changelogsService.create(

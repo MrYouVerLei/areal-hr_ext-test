@@ -55,7 +55,7 @@ export class PositionsService {
     await this.hrOperationService.deleteAllRowsWithPosition(
       Number(res.rows[0].id),
       userId,
-      date || Date.now().toLocaleString(),
+      date || new Date().toLocaleDateString('en-ZA'),
     );
 
     await this.changelogsService.create(
